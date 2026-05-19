@@ -15,12 +15,12 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-73px)] bg-slate-50">
+    <main className="lakbay-page min-h-[calc(100vh-73px)]">
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-lakbay-green">Demo login</p>
-          <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">Choose a role and open its dynamic dashboard.</h1>
-          <p className="mt-4 text-base leading-7 text-slate-600">
+          <p className="stamp-label rounded-full px-3 py-1 text-[10px] font-black tracking-[0.18em]">Demo login</p>
+          <h1 className="mt-4 text-4xl font-black tracking-tight text-lakbay-deep md:text-5xl">Choose a role and open its Tayabas desk.</h1>
+          <p className="mt-4 text-base leading-7 text-lakbay-deep/65">
             This MVP uses role simulation for fast pitching. Supabase Auth can replace this screen once your Supabase project keys are added.
           </p>
         </div>
@@ -32,11 +32,11 @@ export default function LoginPage() {
               <button
                 key={role}
                 onClick={() => loginAs(role)}
-                className="rounded-[2rem] border border-slate-200 bg-white p-5 text-left shadow-soft transition hover:-translate-y-1 hover:border-lakbay-green hover:bg-emerald-50"
+                className="local-card rounded-[1.25rem] p-5 text-left transition hover:-translate-y-1 hover:border-lakbay-fiesta"
               >
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-lakbay-green">{profile.label}</p>
-                <h2 className="mt-3 text-xl font-black text-slate-950">{profile.demoEmail}</h2>
-                <p className="mt-3 text-sm leading-6 text-slate-500">{profile.headline}</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-lakbay-clay">{profile.label}</p>
+                <h2 className="mt-3 text-xl font-black text-lakbay-deep">{profile.demoEmail}</h2>
+                <p className="mt-3 text-sm leading-6 text-lakbay-deep/60">{profile.headline}</p>
               </button>
             );
           })}

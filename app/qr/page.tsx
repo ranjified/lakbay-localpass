@@ -65,7 +65,7 @@ export default function QRPage() {
   }
 
   return (
-    <main className="bg-slate-50">
+    <main className="lakbay-page">
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft md:p-8">

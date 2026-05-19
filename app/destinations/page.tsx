@@ -3,7 +3,7 @@ import { destinations } from "@/lib/mock-data";
 
 export default function DestinationsPage() {
   return (
-    <main className="bg-slate-50">
+    <main className="lakbay-page">
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>

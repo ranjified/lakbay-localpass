@@ -3,7 +3,7 @@ import { destinations } from "@/lib/mock-data";
 
 export default function MapPage() {
   return (
-    <main className="bg-slate-50">
+    <main className="lakbay-page">
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.25em] text-lakbay-green">Map MVP</p>

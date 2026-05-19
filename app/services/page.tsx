@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { experienceItems, roleExperiences } from "@/lib/experience-data";
-import { roleOrder } from "@/lib/mock-data";
+import { roleExperiences, roleOrder, serviceModules } from "@/lib/mock-data";
 
 export default function ServicesPage() {
   return (
@@ -12,12 +11,17 @@ export default function ServicesPage() {
           <p className="mt-5 max-w-3xl text-base leading-7 text-slate-300">This demo shows how tourists book stays, request vehicles, order food, join tours, follow events, and how each provider sees a unique dashboard.</p>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-5">
-          {experienceItems.map((item) => (
-            <article key={item.title} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{item.title}</p>
-              <p className="mt-3 text-sm leading-6 text-slate-500">{item.description}</p>
-              <Link href={item.href} className="mt-5 inline-flex rounded-full bg-lakbay-green px-4 py-3 text-sm font-black text-white transition hover:bg-slate-950">{item.primaryCta}</Link>
+        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {serviceModules.map((module) => (
+            <article key={module.name} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{module.name}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-500">{module.description}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {module.roles.map((role) => (
+                  <span key={role} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{role}</span>
+                ))}
+              </div>
+              <Link href={module.href} className="mt-5 inline-flex rounded-full bg-lakbay-green px-4 py-3 text-sm font-black text-white transition hover:bg-slate-950">Open module</Link>
             </article>
           ))}
         </div>

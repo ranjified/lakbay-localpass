@@ -1,5 +1,5 @@
 import { TourRequestClient } from "@/components/flows/tour-request-client";
-import { tourPackages } from "@/lib/experience-data";
+import { tourPackages, tourRequests } from "@/lib/mock-data";
 
 export default function ToursPage() {
   return (
@@ -22,6 +22,19 @@ export default function ToursPage() {
               </div>
             </article>
           ))}
+        </section>
+        <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+          <h2 className="text-2xl font-black text-slate-950">Tour guide request queue</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            {tourRequests.map((request) => (
+              <article key={request.id} className="rounded-3xl bg-slate-50 p-5">
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-lakbay-green">{request.status}</p>
+                <h3 className="mt-2 text-lg font-black text-slate-950">{request.package}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-500">{request.group}, {request.groupSize} pax, meeting at {request.meetingPoint}</p>
+                <button className="mt-4 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-700 shadow-sm">Open story kit</button>
+              </article>
+            ))}
+          </div>
         </section>
       </section>
     </main>

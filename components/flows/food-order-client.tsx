@@ -1,16 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { foodItems, tripStyles } from "@/lib/experience-data";
+import { products, tripStyles } from "@/lib/mock-data";
 
 const orderModes = ["Pickup", "Pre-order", "Delivery request", "Dine-in reservation", "Pasalubong bundle reservation"];
 
 export function FoodOrderClient() {
-  const [selected, setSelected] = useState(foodItems[0].id);
+  const [selected, setSelected] = useState(products[0].id);
   const [mode, setMode] = useState(orderModes[0]);
   const [tripStyle, setTripStyle] = useState(tripStyles[1]);
   const [status, setStatus] = useState("Draft");
-  const item = useMemo(() => foodItems.find((entry) => entry.id === selected) ?? foodItems[0], [selected]);
+  const item = useMemo(() => products.find((entry) => entry.id === selected) ?? products[0], [selected]);
 
   function submitOrder() {
     setStatus("Pending merchant confirmation");
@@ -31,8 +31,8 @@ export function FoodOrderClient() {
           <label className="block">
             <span className="text-sm font-black text-slate-700">Choose product</span>
             <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
-              {foodItems.map((entry) => (
-                <option key={entry.id} value={entry.id}>{entry.name} · {entry.shop}</option>
+              {products.map((entry) => (
+                <option key={entry.id} value={entry.id}>{entry.name} - {entry.shop}</option>
               ))}
             </select>
           </label>

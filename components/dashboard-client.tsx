@@ -2,8 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { businesses, destinations, roleProfiles } from "@/lib/mock-data";
-import { demoRequests, roleExperiences } from "@/lib/experience-data";
+import { adminTrustQueue, businesses, demoRequests, destinations, roleExperiences, roleProfiles, tourismHeatPulse } from "@/lib/mock-data";
 import type { UserRole } from "@/lib/types";
 import { RoleSwitcher } from "./role-switcher";
 import { StatCard } from "./stat-card";
@@ -169,24 +168,35 @@ export function DashboardClient({ defaultRole = "tourist" }: { defaultRole?: Use
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-100 text-slate-600">
                   <tr>
-                    <th className="px-4 py-3">Listing</th>
-                    <th className="px-4 py-3">Type</th>
+                    <th className="px-4 py-3">Queue item</th>
+                    <th className="px-4 py-3">Signal</th>
                     <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Engagement</th>
+                    <th className="px-4 py-3">Console</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {businesses.map((business) => (
-                    <tr key={business.id} className="border-t border-slate-200">
-                      <td className="px-4 py-3 font-bold text-slate-800">{business.name}</td>
-                      <td className="px-4 py-3 text-slate-500">{business.type}</td>
-                      <td className="px-4 py-3 text-slate-500">{business.status.replace("_", " ")}</td>
-                      <td className="px-4 py-3 text-slate-500">{business.engagement}</td>
+                  {adminTrustQueue.map((item) => (
+                    <tr key={item.id} className="border-t border-slate-200">
+                      <td className="px-4 py-3 font-bold text-slate-800">{item.item}</td>
+                      <td className="px-4 py-3 text-slate-500">{item.risk}</td>
+                      <td className="px-4 py-3 text-slate-500">{item.status}</td>
+                      <td className="px-4 py-3 text-slate-500">Trust Queue</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+            {role === "tourism_staff" && (
+              <div className="mt-5 grid gap-3 md:grid-cols-4">
+                {tourismHeatPulse.map((pulse) => (
+                  <div key={pulse.label} className="rounded-2xl bg-emerald-50 p-4">
+                    <p className="text-sm font-black text-slate-950">{pulse.value}</p>
+                    <p className="mt-1 text-xs font-bold text-lakbay-green">{pulse.label}</p>
+                    <p className="mt-1 text-xs text-slate-500">{pulse.trend}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
 

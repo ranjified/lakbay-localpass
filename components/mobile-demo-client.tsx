@@ -2,8 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { roleExperiences } from "@/lib/experience-data";
-import { roleOrder } from "@/lib/mock-data";
+import { mobileRoleScreens, roleExperiences, roleOrder } from "@/lib/mock-data";
 import type { UserRole } from "@/lib/types";
 
 export function MobileDemoClient() {
@@ -79,7 +78,10 @@ export function MobileDemoClient() {
           <p className="mt-3 text-sm leading-6 text-slate-500">{experience.uniqueMode}</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <div>
-              <h4 className="font-black text-slate-900">Mobile features</h4>
+          <h4 className="font-black text-slate-900">Mobile features</h4>
+              <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+                {mobileRoleScreens.find((screen) => screen.role === role)?.screenName}
+              </p>
               <div className="mt-3 space-y-2">
                 {experience.mobileFeatures.map((feature) => (
                   <div key={feature} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">{feature}</div>

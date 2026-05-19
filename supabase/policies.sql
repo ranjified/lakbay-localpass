@@ -172,3 +172,7 @@ with check (
 create policy "Admins can read audit logs"
 on public.audit_logs for select
 using (public.current_user_role() in ('tourism_staff', 'admin'));
+
+create policy "Admins can create audit logs"
+on public.audit_logs for insert
+with check (public.current_user_role() in ('tourism_staff', 'admin') or actor_id is null);

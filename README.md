@@ -30,7 +30,7 @@ This build includes:
 | `/stays` | Tourist stay booking flow and host-side confirmation concept |
 | `/transport` | Tourist vehicle request flow and driver-side queue concept |
 | `/tours` | Tour guide booking flow and story card concept |
-| `/events` | Event Trip Builder for event organizers |
+| `/events` | Event Trip Builder for organizers and tourist itinerary saves |
 | `/mobile` | Mobile/PWA role demo for every user type |
 | `/dashboard` | Dynamic role dashboard |
 | `/login` | Role simulation login |
@@ -100,6 +100,17 @@ Never commit `SUPABASE_SERVICE_ROLE_KEY`.
 3. Deploy.
 
 The app still works without Supabase keys because the pitch demo uses local mock data. After Supabase is configured, the next development step is connecting live tables to the pages and replacing demo login with Supabase Auth.
+
+## Clickable demo flows
+
+| Flow | Tourist action | Provider/Admin action | Demo-only behavior |
+| --- | --- | --- | --- |
+| Taste Trail | Choose a shop/product, order mode, quantity, pickup time, and submit | Merchant sees pending, preparing, ready, and completed queue cards | Saves a sample food order to browser localStorage |
+| Stay Tayabas | Pick accommodation, dates, guests, room request, and submit | Host inbox shows confirm, decline, and check-in instruction actions | Shows pending host confirmation without Supabase |
+| Sakay Tayabas | Choose pickup, destination, passengers, vehicle package, and submit | Driver queue shows Accept, Arrived, and Completed actions | Shows pending driver acceptance without paid map or ride APIs |
+| Kwentong Gabay | Pick guide package, date, group size, meeting point, and submit | Guide sees booking queue and story cards | Story cards cover Basilica, Casa Comunidad, Malagonlong Bridge, food trail, and festival narratives |
+| Event Trip Builder | Save an event to itinerary | Organizer publishes schedule, venue, event QR, food, ride, and stay links | Connects event interest to local spending options |
+| Mobile/PWA | Switch role screens | Each role previews mobile access and quick actions | Phone mockups use mock data only |
 
 ## Demo accounts
 

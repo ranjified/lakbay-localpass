@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { tripStyles, vehicleOptions } from "@/lib/experience-data";
+import { tripStyles, vehiclePackages } from "@/lib/mock-data";
 
 export function TransportRequestClient() {
-  const [selected, setSelected] = useState(vehicleOptions[0].id);
+  const [selected, setSelected] = useState(vehiclePackages[0].id);
   const [tripStyle, setTripStyle] = useState(tripStyles[0]);
   const [status, setStatus] = useState("Draft");
-  const vehicle = useMemo(() => vehicleOptions.find((entry) => entry.id === selected) ?? vehicleOptions[0], [selected]);
+  const vehicle = useMemo(() => vehiclePackages.find((entry) => entry.id === selected) ?? vehiclePackages[0], [selected]);
 
   function submitRide() {
     setStatus("Pending driver acceptance");
@@ -35,8 +35,8 @@ export function TransportRequestClient() {
           <label className="block">
             <span className="text-sm font-black text-slate-700">Choose Route Buddy package</span>
             <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
-              {vehicleOptions.map((entry) => (
-                <option key={entry.id} value={entry.id}>{entry.name} · {entry.vehicleType}</option>
+              {vehiclePackages.map((entry) => (
+                <option key={entry.id} value={entry.id}>{entry.name} - {entry.vehicleType}</option>
               ))}
             </select>
           </label>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EventTripBuilderClient } from "@/components/flows/event-trip-builder-client";
 import { events } from "@/lib/mock-data";
 
 const eventAddOns = [
@@ -46,6 +47,10 @@ export default function EventsPage() {
             </div>
           </aside>
         </div>
+
+        <section className="mt-8">
+          <EventTripBuilderClient />
+        </section>
       </section>
     </main>
   );

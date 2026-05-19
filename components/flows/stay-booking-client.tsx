@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { stayOptions, tripStyles } from "@/lib/experience-data";
+import { stayOptions, tripStyles } from "@/lib/mock-data";
 
 export function StayBookingClient() {
   const [selected, setSelected] = useState(stayOptions[0].id);
@@ -36,7 +36,7 @@ export function StayBookingClient() {
             <span className="text-sm font-black text-slate-700">Choose stay</span>
             <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
               {stayOptions.map((entry) => (
-                <option key={entry.id} value={entry.id}>{entry.name} · {entry.bestFor}</option>
+                <option key={entry.id} value={entry.id}>{entry.name} - {entry.bestFor}</option>
               ))}
             </select>
           </label>

@@ -1,4 +1,4 @@
-import type { DemoRequest } from "@/lib/experience-data";
+import type { DemoRequest } from "@/lib/mock-data";
 
 export function RequestStatusCard({ request }: { request: DemoRequest }) {
   return (

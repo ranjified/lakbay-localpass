@@ -66,10 +66,25 @@ select id, 'Terminal Pickup Assist', 'Terminal Pickup', '1 to 4 passengers', 'Te
 from public.businesses where name = 'Local Transport Desk'
 on conflict do nothing;
 
+insert into public.vehicle_packages (business_id, name, vehicle_type, capacity, route, price_mode, route_badge)
+select id, 'Food Trip Ride', 'Tricycle', '1 to 3 passengers', 'Cafe stop to Budin Trail to Local Eats Demo Kitchen', 'Driver confirms fare before trip', 'Taste Trail Rider'
+from public.businesses where name = 'Local Transport Desk'
+on conflict do nothing;
+
+insert into public.vehicle_packages (business_id, name, vehicle_type, capacity, route, price_mode, route_badge)
+select id, 'Pasalubong Stopover', 'Tour Vehicle', '2 to 6 passengers', 'Heritage stop with pasalubong pickup before terminal drop-off', 'Quote request', 'Pasalubong Buddy'
+from public.businesses where name = 'Local Transport Desk'
+on conflict do nothing;
+
+insert into public.vehicle_packages (business_id, name, vehicle_type, capacity, route, price_mode, route_badge)
+select id, 'Group Van Day Tour', 'Group Shuttle', '8 to 12 passengers', 'Basilica, Casa Comunidad, Malagonlong Bridge, food loop, and stay transfer', 'Group day quote', 'Group Day Explorer'
+from public.businesses where name = 'Local Transport Desk'
+on conflict do nothing;
+
 insert into public.tour_packages (business_id, name, duration, ideal_for, meeting_point, includes, story_cards)
 select id, 'Kwentong Tayabas Heritage Walk', '2 hours', 'Students, balikbayans, first-time visitors', 'Basilica entrance',
 array['Basilica story', 'Casa Comunidad stop', 'Photo prompts', 'Pasalubong recommendation'],
-array['Basilica etiquette', 'Civic history', 'Old Tayabas trivia']
+array['Basilica story', 'Casa Comunidad story', 'Malagonlong Bridge story', 'Food trail story', 'Festival story']
 from public.businesses where name = 'Lakbay Guide Juan'
 on conflict do nothing;
 
@@ -86,4 +101,16 @@ on conflict do nothing;
 insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
 select id, 'ride_request', 'Heritage Trike Loop', 'Heritage Walk', '2026-06-10', '4:30 PM', null, 3, 'Casa Comunidad', 'Budin and Pasalubong Trail', 'Please include a short pasalubong stopover.', 'confirmed'
 from public.businesses where name = 'Local Transport Desk'
+on conflict do nothing;
+
+insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
+select id, 'tour_request', 'Kwentong Tayabas Heritage Walk', 'Heritage Walk', '2026-06-10', '8:00 AM', null, 12, 'Basilica entrance', 'Casa Comunidad', 'Student group wants civic history and festival stories.', 'pending'
+from public.businesses where name = 'Lakbay Guide Juan'
+on conflict do nothing;
+
+insert into public.audit_logs (action, entity_type, notes)
+values
+  ('seed_demo', 'products', 'Taste Trail products seeded for clickable demo'),
+  ('seed_demo', 'vehicle_packages', 'Route Buddy packages seeded for Sakay Tayabas'),
+  ('seed_demo', 'tour_packages', 'Kwentong Gabay story cards seeded for guide demo')
 on conflict do nothing;

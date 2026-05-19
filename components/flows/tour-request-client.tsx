@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { tourPackages } from "@/lib/experience-data";
+import { tourPackages } from "@/lib/mock-data";
 
 export function TourRequestClient() {
   const [selected, setSelected] = useState(tourPackages[0].id);
@@ -28,7 +28,7 @@ export function TourRequestClient() {
             <span className="text-sm font-black text-slate-700">Choose guide package</span>
             <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
               {tourPackages.map((entry) => (
-                <option key={entry.id} value={entry.id}>{entry.name} · {entry.duration}</option>
+                <option key={entry.id} value={entry.id}>{entry.name} - {entry.duration}</option>
               ))}
             </select>
           </label>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="120" fill="#0f766e"/>
+  <circle cx="256" cy="210" r="88" fill="#fff7ed"/>
+  <path d="M256 80c-88 0-160 72-160 160 0 126 160 216 160 216s160-90 160-216c0-88-72-160-160-160zm0 218a58 58 0 1 1 0-116 58 58 0 0 1 0 116z" fill="#f59e0b" opacity=".95"/>
+  <text x="256" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="74" font-weight="800" fill="#0f172a">LP</text>
+</svg>

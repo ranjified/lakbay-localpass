@@ -1,0 +1,16 @@
+{
+  "name": "Lakbay LocalPass",
+  "short_name": "LocalPass",
+  "description": "Tayabas tourism discovery and QR rewards demo",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff7ed",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

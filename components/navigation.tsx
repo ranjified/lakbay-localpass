@@ -2,11 +2,12 @@ import Link from "next/link";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/destinations", label: "Destinations" },
-  { href: "/map", label: "Map" },
-  { href: "/qr", label: "LocalPass QR" },
-  { href: "/dashboard", label: "Dashboards" },
-  { href: "/admin", label: "Admin" }
+  { href: "/services", label: "Services" },
+  { href: "/food", label: "Food" },
+  { href: "/stays", label: "Stays" },
+  { href: "/transport", label: "Sakay" },
+  { href: "/mobile", label: "Mobile" },
+  { href: "/dashboard", label: "Dashboards" }
 ];
 
 export function Navigation() {
@@ -20,7 +21,7 @@ export function Navigation() {
             <span className="block text-xs font-semibold uppercase tracking-[0.22em] text-lakbay-green">Tayabas</span>
           </span>
         </Link>
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-1 lg:flex">
           {links.map((link) => (
             <Link key={link.href} href={link.href} className="rounded-full px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
               {link.label}

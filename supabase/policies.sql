@@ -102,3 +102,73 @@ with check (user_id = auth.uid());
 create policy "Public can read reviews"
 on public.reviews for select
 using (true);
+
+alter table public.products enable row level security;
+alter table public.stay_rooms enable row level security;
+alter table public.vehicle_packages enable row level security;
+alter table public.tour_packages enable row level security;
+alter table public.service_requests enable row level security;
+alter table public.audit_logs enable row level security;
+
+create policy "Public can read available products"
+on public.products for select
+using (is_available = true);
+
+create policy "Owners can manage products"
+on public.products for all
+using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
+with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
+
+create policy "Public can read available stay rooms"
+on public.stay_rooms for select
+using (is_available = true);
+
+create policy "Owners can manage stay rooms"
+on public.stay_rooms for all
+using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
+with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
+
+create policy "Public can read available vehicle packages"
+on public.vehicle_packages for select
+using (is_available = true);
+
+create policy "Owners can manage vehicle packages"
+on public.vehicle_packages for all
+using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
+with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
+
+create policy "Public can read available tour packages"
+on public.tour_packages for select
+using (is_available = true);
+
+create policy "Owners can manage tour packages"
+on public.tour_packages for all
+using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
+with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
+
+create policy "Users can create service requests"
+on public.service_requests for insert
+with check (requester_id = auth.uid() or requester_id is null);
+
+create policy "Users and providers can read service requests"
+on public.service_requests for select
+using (
+  requester_id = auth.uid()
+  or public.current_user_role() in ('tourism_staff', 'admin')
+  or exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid())
+);
+
+create policy "Providers can update related service requests"
+on public.service_requests for update
+using (
+  public.current_user_role() in ('tourism_staff', 'admin')
+  or exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid())
+)
+with check (
+  public.current_user_role() in ('tourism_staff', 'admin')
+  or exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid())
+);
+
+create policy "Admins can read audit logs"
+on public.audit_logs for select
+using (public.current_user_role() in ('tourism_staff', 'admin'));

@@ -1,0 +1,2050 @@
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/README.md /mnt/data/lakbay-upgrade/lakbay-localpass/README.md
+--- /mnt/data/lakbay-original/lakbay-localpass/README.md	2026-05-19 06:59:13.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/README.md	2026-05-19 07:46:04.623011638 +0000
+@@ -1,18 +1,55 @@
+ # Lakbay LocalPass
+ 
+-Lakbay LocalPass is a working demo for a Tayabas Tourism Super App. It shows a Vercel ready web app, mobile friendly PWA screens, role based dashboards, QR check in simulation, destination discovery, and Supabase database scripts.
++Lakbay LocalPass is a working demo for a Tayabas Tourism Super App. It shows a Vercel-ready web app, mobile-friendly PWA screens, role-based dashboards, QR check-in simulation, destination discovery, service booking flows, and Supabase database scripts.
+ 
+-## Demo scope
++## Expanded demo scope
+ 
+-This initial build includes:
++This build includes:
+ 
+ 1. Public landing page for the pitch
+ 2. Destination directory with seeded Tayabas tourism stops
+-3. API key free map demo for easy Vercel deployment
+-4. LocalPass QR check in simulation with browser saved points
++3. API-key-free map demo for easy Vercel deployment
++4. LocalPass QR check-in simulation with browser-saved points
+ 5. Dynamic dashboard for tourists, merchants, guides, transport providers, accommodation owners, event organizers, tourism staff, and system admin
+-6. Supabase schema, seed data, and Row Level Security policies
+-7. PWA manifest for installable mobile browser demo
++6. Food and pasalubong ordering demo through Taste Trail
++7. Stay booking demo through Stay Match
++8. Vehicle request demo through Sakay Tayabas and Route Buddy
++9. Tour guide booking demo through Kwentong Gabay
++10. Event Trip Builder demo
++11. Mobile/PWA preview for every user role
++12. Supabase schema, seed data, and Row Level Security policies
++13. PWA manifest for installable mobile browser demo
++
++## Main demo pages
++
++| Page | Purpose |
++| --- | --- |
++| `/` | Pitch-ready landing page |
++| `/services` | Overview of all service modules and role access |
++| `/food` | Tourist food/pasalubong order flow and merchant-side queue concept |
++| `/stays` | Tourist stay booking flow and host-side confirmation concept |
++| `/transport` | Tourist vehicle request flow and driver-side queue concept |
++| `/tours` | Tour guide booking flow and story card concept |
++| `/events` | Event Trip Builder for event organizers |
++| `/mobile` | Mobile/PWA role demo for every user type |
++| `/dashboard` | Dynamic role dashboard |
++| `/login` | Role simulation login |
++| `/qr` | QR check-in and LocalPass points demo |
++| `/map` | Tourism map demo |
++| `/admin` | Admin dashboard view |
++
++## User roles
++
++| Role | Dashboard name | Unique module |
++| --- | --- | --- |
++| Tourist | My Lakbay Pass | Lakbay Mode |
++| Merchant | Local Seller Counter | Tourism Boost Card |
++| Tour Guide | Kwentong Gabay Desk | Story Cards |
++| Transport Provider | Sakay Tayabas Board | Route Buddy |
++| Accommodation Owner | Stay Tayabas Desk | Stay Match |
++| Event Organizer | Tayabas Events Desk | Event Trip Builder |
++| Tourism Staff | Tourism Command Center | Tourism Heat Pulse |
++| Admin | Platform Control Room | Trust and Safety Queue |
+ 
+ ## Tech stack
+ 
+@@ -21,7 +58,7 @@
+ | Frontend | Next.js App Router |
+ | Styling | Tailwind CSS |
+ | Backend | Supabase Postgres |
+-| Auth ready | Supabase Auth |
++| Auth-ready | Supabase Auth |
+ | Database security | Supabase Row Level Security |
+ | Hosting | Vercel |
+ | Version control | GitHub |
+@@ -59,10 +96,10 @@
+ ## Vercel deployment
+ 
+ 1. Import this GitHub repo in Vercel.
+-2. Add the same Supabase environment variables in Vercel Project Settings.
++2. Add the same Supabase environment variables in Vercel Project Settings once Supabase is ready.
+ 3. Deploy.
+ 
+-The app also works without Supabase keys because the pitch demo uses local mock data. After Supabase is configured, the next development step is connecting live tables to the pages and replacing demo login with Supabase Auth.
++The app still works without Supabase keys because the pitch demo uses local mock data. After Supabase is configured, the next development step is connecting live tables to the pages and replacing demo login with Supabase Auth.
+ 
+ ## Demo accounts
+ 
+@@ -80,8 +117,9 @@
+ ## Recommended next tasks
+ 
+ 1. Connect Supabase Auth to login.
+-2. Read destinations and businesses from Supabase instead of mock data.
+-3. Add merchant product management forms.
++2. Read destinations, products, stays, vehicle packages, and service requests from Supabase instead of mock data.
++3. Add create/update forms for merchant products, stay rooms, vehicle packages, and tour packages.
+ 4. Add tourism staff content editor for QR stories.
+ 5. Replace the static map demo with Leaflet or Mapbox.
+-6. Add camera based QR scanning for the mobile PWA.
++6. Add camera-based QR scanning for the mobile PWA.
++7. Add notification hooks for booking status changes.
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/dashboard/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/dashboard/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/dashboard/page.tsx	2026-05-19 06:57:49.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/dashboard/page.tsx	2026-05-19 07:44:59.617266682 +0000
+@@ -1,5 +1,13 @@
+ import { DashboardClient } from "@/components/dashboard-client";
++import { roleProfiles } from "@/lib/mock-data";
++import type { UserRole } from "@/lib/types";
+ 
+-export default function DashboardPage() {
+-  return <DashboardClient />;
++function isUserRole(value: string | undefined): value is UserRole {
++  return Boolean(value && value in roleProfiles);
++}
++
++export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ role?: string }> }) {
++  const params = await searchParams;
++  const defaultRole = isUserRole(params?.role) ? params.role : "tourist";
++  return <DashboardClient defaultRole={defaultRole} />;
+ }
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/events/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/events/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/events/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/events/page.tsx	2026-05-19 07:44:10.774519950 +0000
+@@ -0,0 +1,52 @@
++import Link from "next/link";
++import { events } from "@/lib/mock-data";
++
++const eventAddOns = [
++  "Recommended food and pasalubong bundles",
++  "Route Buddy vehicle packages",
++  "Nearby Stay Match listings",
++  "QR challenge and event badge",
++  "Merchant coupon bundle",
++  "Visitor interest report"
++];
++
++export default function EventsPage() {
++  return (
++    <main className="bg-slate-50">
++      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
++        <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-soft md:p-12">
++          <p className="text-sm font-black uppercase tracking-[0.28em] text-lakbay-gold">Event Trip Builder</p>
++          <h1 className="mt-4 text-4xl font-black tracking-tight md:text-6xl">Events become complete tourism journeys.</h1>
++          <p className="mt-5 max-w-3xl text-base leading-7 text-slate-300">Event organizers can publish an event, connect food, rides, stays, guide packages, QR challenges, and see visitor interest.</p>
++        </div>
++
++        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.8fr]">
++          <section className="grid gap-5">
++            {events.map((event) => (
++              <article key={event.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
++                  <div>
++                    <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{event.date}</p>
++                    <h2 className="mt-3 text-2xl font-black text-slate-950">{event.title}</h2>
++                    <p className="mt-2 text-sm font-bold text-slate-500">{event.venue}</p>
++                    <p className="mt-4 text-sm leading-6 text-slate-500">{event.description}</p>
++                  </div>
++                  <Link href="/mobile" className="rounded-full bg-lakbay-green px-5 py-3 text-center text-sm font-black text-white transition hover:bg-slate-950">Mobile event view</Link>
++                </div>
++              </article>
++            ))}
++          </section>
++
++          <aside className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++            <h2 className="text-2xl font-black text-slate-950">Organizer tools</h2>
++            <div className="mt-5 space-y-3">
++              {eventAddOns.map((item) => (
++                <div key={item} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">{item}</div>
++              ))}
++            </div>
++          </aside>
++        </div>
++      </section>
++    </main>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/food/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/food/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/food/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/food/page.tsx	2026-05-19 07:44:10.686920736 +0000
+@@ -0,0 +1,28 @@
++import { FoodOrderClient } from "@/components/flows/food-order-client";
++import { foodItems } from "@/lib/experience-data";
++
++export default function FoodPage() {
++  return (
++    <main className="bg-slate-50">
++      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
++        <div className="mb-8 rounded-[2rem] bg-lakbay-cream p-8 shadow-soft md:p-10">
++          <p className="text-sm font-black uppercase tracking-[0.28em] text-lakbay-green">Taste Trail</p>
++          <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">Food and pasalubong ordering demo</h1>
++          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">Tourists preorder meals, pasalubong, and bundles. Merchants receive a clear preparation queue with LocalPass rewards and route tags.</p>
++        </div>
++        <FoodOrderClient />
++        <section className="mt-8 grid gap-5 md:grid-cols-3">
++          {foodItems.map((item) => (
++            <article key={item.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{item.category}</p>
++              <h2 className="mt-3 text-xl font-black text-slate-950">{item.name}</h2>
++              <p className="mt-2 text-sm text-slate-500">{item.shop}</p>
++              <p className="mt-4 text-2xl font-black text-slate-950">{item.price}</p>
++              <p className="mt-3 rounded-2xl bg-emerald-50 p-3 text-sm font-bold text-lakbay-green">{item.localPassReward}</p>
++            </article>
++          ))}
++        </section>
++      </section>
++    </main>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/mobile/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/mobile/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/mobile/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/mobile/page.tsx	2026-05-19 07:44:10.797178478 +0000
+@@ -0,0 +1,16 @@
++import { MobileDemoClient } from "@/components/mobile-demo-client";
++
++export default function MobilePage() {
++  return (
++    <main className="bg-slate-50">
++      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
++        <div className="mb-8 rounded-[2rem] bg-lakbay-cream p-8 shadow-soft md:p-10">
++          <p className="text-sm font-black uppercase tracking-[0.28em] text-lakbay-green">PWA mobile app demo</p>
++          <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">Every role gets a different mobile app experience.</h1>
++          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">This page previews the mobile screens for tourists, merchants, guides, transport providers, accommodation owners, event organizers, tourism staff, and admin.</p>
++        </div>
++        <MobileDemoClient />
++      </section>
++    </main>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/page.tsx	2026-05-19 06:57:49.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/page.tsx	2026-05-19 07:45:23.711626514 +0000
+@@ -28,8 +28,8 @@
+               <Link href="/login" className="rounded-full bg-lakbay-green px-6 py-4 text-center text-sm font-black text-white shadow-soft transition hover:bg-slate-950">
+                 Try demo login
+               </Link>
+-              <Link href="/map" className="rounded-full border border-slate-300 bg-white px-6 py-4 text-center text-sm font-black text-slate-800 transition hover:border-lakbay-green hover:text-lakbay-green">
+-                View map demo
++              <Link href="/services" className="rounded-full border border-slate-300 bg-white px-6 py-4 text-center text-sm font-black text-slate-800 transition hover:border-lakbay-green hover:text-lakbay-green">
++                Open service demos
+               </Link>
+             </div>
+           </div>
+@@ -62,6 +62,26 @@
+           </div>
+         </div>
+       </section>
++
++      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
++        <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-soft md:p-10">
++          <p className="text-sm font-black uppercase tracking-[0.25em] text-lakbay-gold">Demo journeys</p>
++          <h2 className="mt-3 text-3xl font-black md:text-4xl">Book, ride, order, scan, and manage from one platform.</h2>
++          <div className="mt-6 grid gap-3 md:grid-cols-5">
++            {[
++              ["Taste Trail", "/food"],
++              ["Stay Match", "/stays"],
++              ["Sakay Tayabas", "/transport"],
++              ["Kwentong Gabay", "/tours"],
++              ["Mobile Demo", "/mobile"]
++            ].map(([label, href]) => (
++              <Link key={label} href={href} className="rounded-2xl bg-white/10 px-4 py-4 text-center text-sm font-black text-white transition hover:bg-white hover:text-slate-950">
++                {label}
++              </Link>
++            ))}
++          </div>
++        </div>
++      </section>
+ 
+       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+         <div className="grid gap-6 md:grid-cols-3">
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/services/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/services/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/services/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/services/page.tsx	2026-05-19 07:44:10.666156458 +0000
+@@ -0,0 +1,48 @@
++import Link from "next/link";
++import { experienceItems, roleExperiences } from "@/lib/experience-data";
++import { roleOrder } from "@/lib/mock-data";
++
++export default function ServicesPage() {
++  return (
++    <main className="bg-slate-50">
++      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
++        <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-soft md:p-12">
++          <p className="text-sm font-black uppercase tracking-[0.28em] text-lakbay-gold">Lakbay LocalPass service demo</p>
++          <h1 className="mt-4 text-4xl font-black tracking-tight md:text-6xl">One tourism super app, many user experiences.</h1>
++          <p className="mt-5 max-w-3xl text-base leading-7 text-slate-300">This demo shows how tourists book stays, request vehicles, order food, join tours, follow events, and how each provider sees a unique dashboard.</p>
++        </div>
++
++        <div className="mt-8 grid gap-6 lg:grid-cols-5">
++          {experienceItems.map((item) => (
++            <article key={item.title} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{item.title}</p>
++              <p className="mt-3 text-sm leading-6 text-slate-500">{item.description}</p>
++              <Link href={item.href} className="mt-5 inline-flex rounded-full bg-lakbay-green px-4 py-3 text-sm font-black text-white transition hover:bg-slate-950">{item.primaryCta}</Link>
++            </article>
++          ))}
++        </div>
++
++        <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <h2 className="text-2xl font-black text-slate-950">User access matrix</h2>
++          <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
++            {roleOrder.map((role) => {
++              const experience = roleExperiences[role];
++              return (
++                <article key={role} className="rounded-3xl bg-slate-50 p-5">
++                  <p className="text-xs font-black uppercase tracking-[0.2em] text-lakbay-green">{experience.colorTag}</p>
++                  <h3 className="mt-2 text-lg font-black text-slate-950">{experience.label}</h3>
++                  <p className="mt-2 text-sm leading-6 text-slate-500">{experience.dashboardName}</p>
++                  <div className="mt-4 space-y-2">
++                    {experience.quickActions.slice(0, 3).map((action) => (
++                      <Link key={action.label} href={action.href} className="block rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:text-lakbay-green">{action.label}</Link>
++                    ))}
++                  </div>
++                </article>
++              );
++            })}
++          </div>
++        </section>
++      </section>
++    </main>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/stays/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/stays/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/stays/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/stays/page.tsx	2026-05-19 07:44:10.707176235 +0000
+@@ -0,0 +1,30 @@
++import { StayBookingClient } from "@/components/flows/stay-booking-client";
++import { stayOptions } from "@/lib/experience-data";
++
++export default function StaysPage() {
++  return (
++    <main className="bg-slate-50">
++      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
++        <div className="mb-8 rounded-[2rem] bg-lakbay-cream p-8 shadow-soft md:p-10">
++          <p className="text-sm font-black uppercase tracking-[0.28em] text-lakbay-green">Stay Match</p>
++          <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">Stay Tayabas booking demo</h1>
++          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">Visitors send booking inquiries while hosts manage room availability, check-in guides, and add-on recommendations.</p>
++        </div>
++        <StayBookingClient />
++        <section className="mt-8 grid gap-5 md:grid-cols-3">
++          {stayOptions.map((stay) => (
++            <article key={stay.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{stay.stayType}</p>
++              <h2 className="mt-3 text-xl font-black text-slate-950">{stay.name}</h2>
++              <p className="mt-2 text-sm leading-6 text-slate-500">{stay.bestFor}</p>
++              <p className="mt-4 text-2xl font-black text-slate-950">{stay.rate}</p>
++              <div className="mt-4 flex flex-wrap gap-2">
++                {stay.matchTags.map((tag) => <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">{tag}</span>)}
++              </div>
++            </article>
++          ))}
++        </section>
++      </section>
++    </main>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/tours/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/tours/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/tours/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/tours/page.tsx	2026-05-19 07:44:10.748215195 +0000
+@@ -0,0 +1,29 @@
++import { TourRequestClient } from "@/components/flows/tour-request-client";
++import { tourPackages } from "@/lib/experience-data";
++
++export default function ToursPage() {
++  return (
++    <main className="bg-slate-50">
++      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
++        <div className="mb-8 rounded-[2rem] bg-lakbay-cream p-8 shadow-soft md:p-10">
++          <p className="text-sm font-black uppercase tracking-[0.28em] text-lakbay-green">Kwentong Gabay</p>
++          <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">Tour guide booking demo</h1>
++          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">Guides receive structured tour requests and open story cards for each destination during the actual trip.</p>
++        </div>
++        <TourRequestClient />
++        <section className="mt-8 grid gap-5 md:grid-cols-3">
++          {tourPackages.map((tour) => (
++            <article key={tour.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{tour.duration}</p>
++              <h2 className="mt-3 text-xl font-black text-slate-950">{tour.name}</h2>
++              <p className="mt-2 text-sm leading-6 text-slate-500">{tour.idealFor}</p>
++              <div className="mt-4 space-y-2">
++                {tour.storyCards.map((card) => <p key={card} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">{card}</p>)}
++              </div>
++            </article>
++          ))}
++        </section>
++      </section>
++    </main>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/app/transport/page.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/app/transport/page.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/app/transport/page.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/app/transport/page.tsx	2026-05-19 07:44:10.728580692 +0000
+@@ -0,0 +1,27 @@
++import { TransportRequestClient } from "@/components/flows/transport-request-client";
++import { vehicleOptions } from "@/lib/experience-data";
++
++export default function TransportPage() {
++  return (
++    <main className="bg-slate-50">
++      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
++        <div className="mb-8 rounded-[2rem] bg-lakbay-cream p-8 shadow-soft md:p-10">
++          <p className="text-sm font-black uppercase tracking-[0.28em] text-lakbay-green">Sakay Tayabas</p>
++          <h1 className="mt-4 text-4xl font-black tracking-tight text-slate-950 md:text-5xl">Vehicle request demo</h1>
++          <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">Tourists request local transport through tourism packages like heritage loops, terminal pickups, and family van tours.</p>
++        </div>
++        <TransportRequestClient />
++        <section className="mt-8 grid gap-5 md:grid-cols-3">
++          {vehicleOptions.map((vehicle) => (
++            <article key={vehicle.id} className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{vehicle.vehicleType}</p>
++              <h2 className="mt-3 text-xl font-black text-slate-950">{vehicle.name}</h2>
++              <p className="mt-2 text-sm leading-6 text-slate-500">{vehicle.route}</p>
++              <p className="mt-4 rounded-2xl bg-emerald-50 p-3 text-sm font-bold text-lakbay-green">Badge: {vehicle.routeBadge}</p>
++            </article>
++          ))}
++        </section>
++      </section>
++    </main>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/dashboard-client.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/dashboard-client.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/dashboard-client.tsx	2026-05-19 06:59:41.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/dashboard-client.tsx	2026-05-19 07:45:09.944919880 +0000
+@@ -3,9 +3,11 @@
+ import { useEffect, useMemo, useState } from "react";
+ import Link from "next/link";
+ import { businesses, destinations, roleProfiles } from "@/lib/mock-data";
++import { demoRequests, roleExperiences } from "@/lib/experience-data";
+ import type { UserRole } from "@/lib/types";
+ import { RoleSwitcher } from "./role-switcher";
+ import { StatCard } from "./stat-card";
++import { RequestStatusCard } from "./flows/request-status-card";
+ 
+ const storageKey = "lakbay-localpass-role";
+ 
+@@ -31,6 +33,8 @@
+   }
+ 
+   const profile = roleProfiles[role];
++  const experience = roleExperiences[role];
++  const requestsForRole = demoRequests.filter((request) => request.ownerRole === role || role === "tourist" || role === "tourism_staff" || role === "admin");
+   const statusSummary = useMemo(() => {
+     return businesses.reduce(
+       (acc, business) => {
+@@ -47,9 +51,9 @@
+         <div className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft md:p-10">
+           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+             <div>
+-              <p className="text-sm font-bold uppercase tracking-[0.25em] text-lakbay-gold">Dynamic dashboard</p>
++              <p className="text-sm font-bold uppercase tracking-[0.25em] text-lakbay-gold">{experience.dashboardName}</p>
+               <h1 className="mt-4 text-3xl font-black tracking-tight md:text-5xl">{profile.label}</h1>
+-              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">{profile.headline}</p>
++              <p className="mt-4 max-w-3xl text-base leading-7 text-slate-300">{experience.mission}</p>
+               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">Demo account: {profile.demoEmail}</p>
+             </div>
+             <div className="rounded-3xl bg-white p-4 text-slate-950">
+@@ -64,33 +68,73 @@
+           ))}
+         </div>
+ 
+-        <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
++        <div className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+           <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+               <div>
+-                <h2 className="text-2xl font-black text-slate-950">Workspace</h2>
++                <p className="text-sm font-black uppercase tracking-[0.22em] text-lakbay-green">Web app access</p>
++                <h2 className="mt-2 text-2xl font-black text-slate-950">Workspace</h2>
+                 <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">{profile.summary}</p>
+               </div>
+-              <Link href="/map" className="rounded-full bg-lakbay-green px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-950">
+-                Open Map
++              <Link href="/mobile" className="rounded-full bg-lakbay-green px-5 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-950">
++                Mobile Preview
+               </Link>
+             </div>
+ 
+             <div className="mt-6 grid gap-3 sm:grid-cols-2">
+-              {profile.primaryActions.map((action) => (
+-                <button key={action} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left text-sm font-bold text-slate-700 transition hover:border-lakbay-green hover:bg-emerald-50 hover:text-lakbay-green">
+-                  {action}
+-                </button>
++              {experience.webFeatures.map((feature) => (
++                <div key={feature} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-bold text-slate-700">
++                  {feature}
++                </div>
+               ))}
+             </div>
+           </section>
+ 
+           <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+-            <h2 className="text-2xl font-black text-slate-950">Live demo data</h2>
+-            <div className="mt-5 space-y-3 text-sm text-slate-600">
+-              <p><strong>{destinations.length}</strong> destinations seeded</p>
+-              <p><strong>{businesses.length}</strong> local partner listings</p>
+-              <p><strong>{statusSummary.approved}</strong> approved, <strong>{statusSummary.pending}</strong> pending, <strong>{statusSummary.needs_review}</strong> needs review</p>
++            <p className="text-sm font-black uppercase tracking-[0.22em] text-lakbay-green">Unique feature</p>
++            <h2 className="mt-2 text-2xl font-black text-slate-950">{experience.colorTag}</h2>
++            <p className="mt-3 text-sm leading-6 text-slate-500">{experience.uniqueMode}</p>
++            <div className="mt-5 rounded-3xl bg-slate-50 p-5">
++              <p className="text-sm font-black text-slate-900">Demo scenario</p>
++              <p className="mt-2 text-sm leading-6 text-slate-500">{experience.demoScenario}</p>
++            </div>
++          </section>
++        </div>
++
++        <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
++            <div>
++              <p className="text-sm font-black uppercase tracking-[0.22em] text-lakbay-green">Quick actions</p>
++              <h2 className="mt-2 text-2xl font-black text-slate-950">What this user can do</h2>
++            </div>
++            <Link href="/services" className="rounded-full border border-slate-200 px-5 py-3 text-center text-sm font-bold text-slate-700 transition hover:border-lakbay-green hover:text-lakbay-green">Open all demo services</Link>
++          </div>
++          <div className="mt-6 grid gap-4 md:grid-cols-4">
++            {experience.quickActions.map((action) => (
++              <Link key={action.label} href={action.href} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 transition hover:-translate-y-1 hover:border-lakbay-green hover:bg-emerald-50">
++                <p className="text-lg font-black text-slate-950">{action.label}</p>
++                <p className="mt-2 text-sm leading-6 text-slate-500">{action.hint}</p>
++              </Link>
++            ))}
++          </div>
++        </section>
++
++        <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
++          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++            <p className="text-sm font-black uppercase tracking-[0.22em] text-lakbay-green">Mobile app access</p>
++            <h2 className="mt-2 text-2xl font-black text-slate-950">{experience.mobileName}</h2>
++            <div className="mt-5 space-y-3">
++              {experience.mobileFeatures.map((feature) => (
++                <div key={feature} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">{feature}</div>
++              ))}
++            </div>
++          </section>
++
++          <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++            <p className="text-sm font-black uppercase tracking-[0.22em] text-lakbay-green">Status tracking demo</p>
++            <h2 className="mt-2 text-2xl font-black text-slate-950">Requests and bookings</h2>
++            <div className="mt-5 grid gap-4 md:grid-cols-2">
++              {requestsForRole.slice(0, 4).map((request) => <RequestStatusCard key={request.id} request={request} />)}
+             </div>
+           </section>
+         </div>
+@@ -145,6 +189,15 @@
+             </div>
+           </section>
+         )}
++
++        <section className="mt-8 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <h2 className="text-2xl font-black text-slate-950">Live demo data</h2>
++          <div className="mt-5 grid gap-3 text-sm text-slate-600 md:grid-cols-3">
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>{destinations.length}</strong> destinations seeded</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>{businesses.length}</strong> local partner listings</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>{statusSummary.approved}</strong> approved, <strong>{statusSummary.pending}</strong> pending, <strong>{statusSummary.needs_review}</strong> needs review</p>
++          </div>
++        </section>
+       </section>
+     </main>
+   );
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/flows/food-order-client.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/food-order-client.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/flows/food-order-client.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/food-order-client.tsx	2026-05-19 07:43:17.186737818 +0000
+@@ -0,0 +1,99 @@
++"use client";
++
++import { useMemo, useState } from "react";
++import { foodItems, tripStyles } from "@/lib/experience-data";
++
++const orderModes = ["Pickup", "Pre-order", "Delivery request", "Dine-in reservation", "Pasalubong bundle reservation"];
++
++export function FoodOrderClient() {
++  const [selected, setSelected] = useState(foodItems[0].id);
++  const [mode, setMode] = useState(orderModes[0]);
++  const [tripStyle, setTripStyle] = useState(tripStyles[1]);
++  const [status, setStatus] = useState("Draft");
++  const item = useMemo(() => foodItems.find((entry) => entry.id === selected) ?? foodItems[0], [selected]);
++
++  function submitOrder() {
++    setStatus("Pending merchant confirmation");
++    window.localStorage.setItem(
++      "lakbay-demo-food-order",
++      JSON.stringify({ item: item.name, shop: item.shop, mode, tripStyle, status: "Pending merchant confirmation" })
++    );
++  }
++
++  return (
++    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++        <p className="text-sm font-black uppercase tracking-[0.24em] text-lakbay-green">Tourist flow</p>
++        <h2 className="mt-3 text-3xl font-black text-slate-950">Order food or pasalubong</h2>
++        <p className="mt-3 text-sm leading-6 text-slate-500">Taste Trail lets visitors order local food in a way that supports route-based tourism. The tourist does not just buy; they complete a local food experience.</p>
++
++        <div className="mt-6 space-y-5">
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Choose product</span>
++            <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {foodItems.map((entry) => (
++                <option key={entry.id} value={entry.id}>{entry.name} · {entry.shop}</option>
++              ))}
++            </select>
++          </label>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Trip style</span>
++            <select value={tripStyle} onChange={(event) => setTripStyle(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {tripStyles.map((style) => <option key={style}>{style}</option>)}
++            </select>
++          </label>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Order type</span>
++            <select value={mode} onChange={(event) => setMode(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {orderModes.map((entry) => <option key={entry}>{entry}</option>)}
++            </select>
++          </label>
++
++          <div className="grid gap-4 sm:grid-cols-2">
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Quantity</span>
++              <input defaultValue="2" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Preferred time</span>
++              <input defaultValue="3:00 PM" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++          </div>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Tourist note</span>
++            <textarea defaultValue="Please prepare as pasalubong for pickup after our heritage walk." className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++          </label>
++
++          <button onClick={submitOrder} className="w-full rounded-full bg-lakbay-green px-6 py-4 text-sm font-black text-white shadow-soft transition hover:bg-slate-950">Submit food order demo</button>
++        </div>
++      </section>
++
++      <aside className="space-y-6">
++        <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft">
++          <p className="text-sm font-bold text-lakbay-gold">Order preview</p>
++          <h3 className="mt-3 text-2xl font-black">{item.name}</h3>
++          <div className="mt-5 space-y-3 text-sm text-slate-300">
++            <p><strong className="text-white">Shop:</strong> {item.shop}</p>
++            <p><strong className="text-white">Price:</strong> {item.price}</p>
++            <p><strong className="text-white">Prep time:</strong> {item.prepTime}</p>
++            <p><strong className="text-white">Pickup:</strong> {item.pickupPoint}</p>
++            <p><strong className="text-white">Reward:</strong> {item.localPassReward}</p>
++            <p><strong className="text-white">Status:</strong> {status}</p>
++          </div>
++        </section>
++
++        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <h3 className="text-xl font-black text-slate-950">Merchant side</h3>
++          <div className="mt-4 space-y-3 text-sm text-slate-600">
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>New order alert:</strong> Merchant receives product, quantity, pickup time, and tourist note.</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Status buttons:</strong> Confirm, Preparing, Ready for Pickup, Completed.</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Unique:</strong> The merchant can attach this product to {item.trailTag} and reward the tourist with LocalPass points.</p>
++          </div>
++        </section>
++      </aside>
++    </div>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/flows/request-status-card.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/request-status-card.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/flows/request-status-card.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/request-status-card.tsx	2026-05-19 07:43:17.161232592 +0000
+@@ -0,0 +1,17 @@
++import type { DemoRequest } from "@/lib/experience-data";
++
++export function RequestStatusCard({ request }: { request: DemoRequest }) {
++  return (
++    <article className="rounded-3xl border border-slate-200 bg-white p-5 shadow-soft">
++      <div className="flex items-start justify-between gap-4">
++        <div>
++          <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-green">{request.kind}</p>
++          <h3 className="mt-2 text-lg font-black text-slate-950">{request.provider}</h3>
++        </div>
++        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-lakbay-green">{request.status}</span>
++      </div>
++      <p className="mt-3 text-sm leading-6 text-slate-500">{request.detail}</p>
++      <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Request ID {request.id}</p>
++    </article>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/flows/stay-booking-client.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/stay-booking-client.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/flows/stay-booking-client.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/stay-booking-client.tsx	2026-05-19 07:43:17.209629160 +0000
+@@ -0,0 +1,106 @@
++"use client";
++
++import { useMemo, useState } from "react";
++import { stayOptions, tripStyles } from "@/lib/experience-data";
++
++export function StayBookingClient() {
++  const [selected, setSelected] = useState(stayOptions[0].id);
++  const [tripStyle, setTripStyle] = useState(tripStyles[4]);
++  const [status, setStatus] = useState("Draft");
++  const stay = useMemo(() => stayOptions.find((entry) => entry.id === selected) ?? stayOptions[0], [selected]);
++
++  function submitBooking() {
++    setStatus("Pending host confirmation");
++    window.localStorage.setItem(
++      "lakbay-demo-stay-booking",
++      JSON.stringify({ stay: stay.name, room: stay.room, tripStyle, status: "Pending host confirmation" })
++    );
++  }
++
++  return (
++    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++        <p className="text-sm font-black uppercase tracking-[0.24em] text-lakbay-green">Tourist flow</p>
++        <h2 className="mt-3 text-3xl font-black text-slate-950">Book a Stay Tayabas listing</h2>
++        <p className="mt-3 text-sm leading-6 text-slate-500">Stay Match recommends accommodations by purpose of visit, not just by room. This helps small stays compete through local experience.</p>
++
++        <div className="mt-6 space-y-5">
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Trip style</span>
++            <select value={tripStyle} onChange={(event) => setTripStyle(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {tripStyles.map((style) => <option key={style}>{style}</option>)}
++            </select>
++          </label>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Choose stay</span>
++            <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {stayOptions.map((entry) => (
++                <option key={entry.id} value={entry.id}>{entry.name} · {entry.bestFor}</option>
++              ))}
++            </select>
++          </label>
++
++          <div className="grid gap-4 sm:grid-cols-2">
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Check-in</span>
++              <input type="date" defaultValue="2026-06-10" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Check-out</span>
++              <input type="date" defaultValue="2026-06-11" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++          </div>
++
++          <div className="grid gap-4 sm:grid-cols-2">
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Guests</span>
++              <input defaultValue="4" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Payment preference</span>
++              <select className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++                <option>Reservation only</option>
++                <option>Pay on arrival</option>
++                <option>GCash later</option>
++              </select>
++            </label>
++          </div>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Special request</span>
++            <textarea defaultValue="We need parking, breakfast option, and nearby family-friendly stops." className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++          </label>
++
++          <button onClick={submitBooking} className="w-full rounded-full bg-lakbay-green px-6 py-4 text-sm font-black text-white shadow-soft transition hover:bg-slate-950">Send stay booking request</button>
++        </div>
++      </section>
++
++      <aside className="space-y-6">
++        <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft">
++          <p className="text-sm font-bold text-lakbay-gold">Stay Match preview</p>
++          <h3 className="mt-3 text-2xl font-black">{stay.name}</h3>
++          <div className="mt-5 space-y-3 text-sm text-slate-300">
++            <p><strong className="text-white">Type:</strong> {stay.stayType}</p>
++            <p><strong className="text-white">Room:</strong> {stay.room}</p>
++            <p><strong className="text-white">Rate:</strong> {stay.rate}</p>
++            <p><strong className="text-white">Location:</strong> {stay.location}</p>
++            <p><strong className="text-white">Status:</strong> {status}</p>
++          </div>
++          <div className="mt-5 flex flex-wrap gap-2">
++            {stay.matchTags.map((tag) => <span key={tag} className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white">{tag}</span>)}
++          </div>
++        </section>
++
++        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <h3 className="text-xl font-black text-slate-950">Host side</h3>
++          <div className="mt-4 space-y-3 text-sm text-slate-600">
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Booking inbox:</strong> Host sees dates, guest count, trip style, and special request.</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Status buttons:</strong> Confirm, Decline, Request more info, Send check-in guide.</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Unique:</strong> Host can recommend food, ride, and guide add-ons after confirming the room.</p>
++          </div>
++        </section>
++      </aside>
++    </div>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/flows/tour-request-client.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/tour-request-client.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/flows/tour-request-client.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/tour-request-client.tsx	2026-05-19 07:43:40.458720793 +0000
+@@ -0,0 +1,81 @@
++"use client";
++
++import { useMemo, useState } from "react";
++import { tourPackages } from "@/lib/experience-data";
++
++export function TourRequestClient() {
++  const [selected, setSelected] = useState(tourPackages[0].id);
++  const [status, setStatus] = useState("Draft");
++  const tour = useMemo(() => tourPackages.find((entry) => entry.id === selected) ?? tourPackages[0], [selected]);
++
++  function submitTour() {
++    setStatus("Pending guide confirmation");
++    window.localStorage.setItem(
++      "lakbay-demo-tour-request",
++      JSON.stringify({ package: tour.name, guide: tour.guide, status: "Pending guide confirmation" })
++    );
++  }
++
++  return (
++    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++        <p className="text-sm font-black uppercase tracking-[0.24em] text-lakbay-green">Tourist flow</p>
++        <h2 className="mt-3 text-3xl font-black text-slate-950">Request a local guide</h2>
++        <p className="mt-3 text-sm leading-6 text-slate-500">Kwentong Gabay turns local knowledge into bookable tours with story cards tied to QR heritage content.</p>
++
++        <div className="mt-6 space-y-5">
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Choose guide package</span>
++            <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {tourPackages.map((entry) => (
++                <option key={entry.id} value={entry.id}>{entry.name} · {entry.duration}</option>
++              ))}
++            </select>
++          </label>
++
++          <div className="grid gap-4 sm:grid-cols-2">
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Date</span>
++              <input type="date" defaultValue="2026-06-10" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Group size</span>
++              <input defaultValue="12" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++          </div>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Learning focus or request</span>
++            <textarea defaultValue="Please focus on civic history and heritage preservation. This is for a student group." className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++          </label>
++
++          <button onClick={submitTour} className="w-full rounded-full bg-lakbay-green px-6 py-4 text-sm font-black text-white shadow-soft transition hover:bg-slate-950">Send guide request</button>
++        </div>
++      </section>
++
++      <aside className="space-y-6">
++        <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft">
++          <p className="text-sm font-bold text-lakbay-gold">Kwentong Gabay preview</p>
++          <h3 className="mt-3 text-2xl font-black">{tour.name}</h3>
++          <div className="mt-5 space-y-3 text-sm text-slate-300">
++            <p><strong className="text-white">Guide:</strong> {tour.guide}</p>
++            <p><strong className="text-white">Duration:</strong> {tour.duration}</p>
++            <p><strong className="text-white">Ideal for:</strong> {tour.idealFor}</p>
++            <p><strong className="text-white">Meeting point:</strong> {tour.meetingPoint}</p>
++            <p><strong className="text-white">Status:</strong> {status}</p>
++          </div>
++        </section>
++
++        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <h3 className="text-xl font-black text-slate-950">Guide story cards</h3>
++          <div className="mt-4 grid gap-3">
++            {tour.storyCards.map((card) => (
++              <div key={card} className="rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-700">{card}</div>
++            ))}
++          </div>
++          <p className="mt-4 text-sm leading-6 text-slate-500">Guide can open these cards on mobile during the actual tour.</p>
++        </section>
++      </aside>
++    </div>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/flows/transport-request-client.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/transport-request-client.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/flows/transport-request-client.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/flows/transport-request-client.tsx	2026-05-19 07:43:17.233561162 +0000
+@@ -0,0 +1,100 @@
++"use client";
++
++import { useMemo, useState } from "react";
++import { tripStyles, vehicleOptions } from "@/lib/experience-data";
++
++export function TransportRequestClient() {
++  const [selected, setSelected] = useState(vehicleOptions[0].id);
++  const [tripStyle, setTripStyle] = useState(tripStyles[0]);
++  const [status, setStatus] = useState("Draft");
++  const vehicle = useMemo(() => vehicleOptions.find((entry) => entry.id === selected) ?? vehicleOptions[0], [selected]);
++
++  function submitRide() {
++    setStatus("Pending driver acceptance");
++    window.localStorage.setItem(
++      "lakbay-demo-ride-request",
++      JSON.stringify({ vehicle: vehicle.name, route: vehicle.route, tripStyle, status: "Pending driver acceptance" })
++    );
++  }
++
++  return (
++    <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++        <p className="text-sm font-black uppercase tracking-[0.24em] text-lakbay-green">Tourist flow</p>
++        <h2 className="mt-3 text-3xl font-black text-slate-950">Grab a local vehicle</h2>
++        <p className="mt-3 text-sm leading-6 text-slate-500">Sakay Tayabas focuses on tourism mobility: terminal pickups, heritage loops, food stopovers, and group transfers.</p>
++
++        <div className="mt-6 space-y-5">
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Trip style</span>
++            <select value={tripStyle} onChange={(event) => setTripStyle(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {tripStyles.map((style) => <option key={style}>{style}</option>)}
++            </select>
++          </label>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Choose Route Buddy package</span>
++            <select value={selected} onChange={(event) => setSelected(event.target.value)} className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green">
++              {vehicleOptions.map((entry) => (
++                <option key={entry.id} value={entry.id}>{entry.name} · {entry.vehicleType}</option>
++              ))}
++            </select>
++          </label>
++
++          <div className="grid gap-4 sm:grid-cols-2">
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Pickup point</span>
++              <input defaultValue="Casa Comunidad" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Destination</span>
++              <input defaultValue="Budin and Pasalubong Trail" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++          </div>
++
++          <div className="grid gap-4 sm:grid-cols-2">
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Passengers</span>
++              <input defaultValue="3" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++            <label className="block">
++              <span className="text-sm font-black text-slate-700">Preferred time</span>
++              <input defaultValue="4:30 PM" className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++            </label>
++          </div>
++
++          <label className="block">
++            <span className="text-sm font-black text-slate-700">Ride note</span>
++            <textarea defaultValue="Please include a short pasalubong stopover. We have two small bags." className="mt-2 min-h-28 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold outline-none focus:border-lakbay-green" />
++          </label>
++
++          <button onClick={submitRide} className="w-full rounded-full bg-lakbay-green px-6 py-4 text-sm font-black text-white shadow-soft transition hover:bg-slate-950">Request vehicle demo</button>
++        </div>
++      </section>
++
++      <aside className="space-y-6">
++        <section className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-soft">
++          <p className="text-sm font-bold text-lakbay-gold">Route Buddy preview</p>
++          <h3 className="mt-3 text-2xl font-black">{vehicle.name}</h3>
++          <div className="mt-5 space-y-3 text-sm text-slate-300">
++            <p><strong className="text-white">Vehicle:</strong> {vehicle.vehicleType}</p>
++            <p><strong className="text-white">Capacity:</strong> {vehicle.capacity}</p>
++            <p><strong className="text-white">Route:</strong> {vehicle.route}</p>
++            <p><strong className="text-white">Fare:</strong> {vehicle.priceMode}</p>
++            <p><strong className="text-white">Status:</strong> {status}</p>
++          </div>
++          <p className="mt-5 rounded-2xl bg-white/10 p-4 text-sm text-white">Badge after ride: {vehicle.routeBadge}</p>
++        </section>
++
++        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <h3 className="text-xl font-black text-slate-950">Driver side</h3>
++          <div className="mt-4 space-y-3 text-sm text-slate-600">
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Incoming ride:</strong> Driver sees pickup, destination, passenger count, route type, and notes.</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Status buttons:</strong> Accept, Arrived, On Route, Completed.</p>
++            <p className="rounded-2xl bg-slate-50 p-4"><strong>Unique:</strong> Route Buddy packages create predictable tourism loops for local drivers.</p>
++          </div>
++        </section>
++      </aside>
++    </div>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/mobile-demo-client.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/mobile-demo-client.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/mobile-demo-client.tsx	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/mobile-demo-client.tsx	2026-05-19 07:43:40.479911863 +0000
+@@ -0,0 +1,102 @@
++"use client";
++
++import { useMemo, useState } from "react";
++import Link from "next/link";
++import { roleExperiences } from "@/lib/experience-data";
++import { roleOrder } from "@/lib/mock-data";
++import type { UserRole } from "@/lib/types";
++
++export function MobileDemoClient() {
++  const [role, setRole] = useState<UserRole>("tourist");
++  const experience = useMemo(() => roleExperiences[role], [role]);
++
++  return (
++    <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
++      <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++        <p className="text-sm font-black uppercase tracking-[0.24em] text-lakbay-green">Mobile app demo</p>
++        <h2 className="mt-3 text-3xl font-black text-slate-950">Pick a user role</h2>
++        <p className="mt-3 text-sm leading-6 text-slate-500">Each role gets a different mobile home screen, quick actions, and notification style.</p>
++        <div className="mt-6 grid gap-2">
++          {roleOrder.map((entry) => (
++            <button
++              key={entry}
++              onClick={() => setRole(entry)}
++              className={`rounded-2xl border px-4 py-3 text-left text-sm font-black transition ${role === entry ? "border-lakbay-green bg-emerald-50 text-lakbay-green" : "border-slate-200 bg-slate-50 text-slate-600 hover:border-lakbay-green"}`}
++            >
++              {roleExperiences[entry].label}
++            </button>
++          ))}
++        </div>
++      </section>
++
++      <section className="grid gap-6 md:grid-cols-[360px_1fr]">
++        <div className="mx-auto w-full max-w-[360px] rounded-[2.5rem] border border-slate-300 bg-slate-950 p-3 shadow-soft">
++          <div className="rounded-[2rem] bg-slate-50 p-4">
++            <div className="mx-auto mb-4 h-1.5 w-20 rounded-full bg-slate-300" />
++            <div className="rounded-[1.5rem] bg-lakbay-green p-4 text-white">
++              <p className="text-xs font-black uppercase tracking-[0.22em] text-lakbay-gold">{experience.mobileName}</p>
++              <h3 className="mt-3 text-2xl font-black">{experience.label}</h3>
++              <p className="mt-3 text-sm leading-6 text-emerald-50">{experience.mission}</p>
++            </div>
++
++            <div className="mt-4 grid grid-cols-2 gap-3">
++              {experience.quickActions.map((action) => (
++                <Link key={action.label} href={action.href} className="rounded-2xl bg-white p-3 text-sm font-black text-slate-800 shadow-sm">
++                  <span>{action.label}</span>
++                  <span className="mt-1 block text-[11px] font-semibold leading-4 text-slate-400">{action.hint}</span>
++                </Link>
++              ))}
++            </div>
++
++            <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
++              <p className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Today</p>
++              <div className="mt-3 space-y-3">
++                {experience.inbox.slice(0, 2).map((item) => (
++                  <div key={item.title} className="rounded-xl bg-slate-50 p-3">
++                    <div className="flex items-center justify-between gap-2">
++                      <p className="text-sm font-black text-slate-800">{item.title}</p>
++                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-black text-lakbay-green">{item.status}</span>
++                    </div>
++                    <p className="mt-1 text-xs leading-5 text-slate-500">{item.note}</p>
++                  </div>
++                ))}
++              </div>
++            </div>
++
++            <div className="mt-4 grid grid-cols-5 gap-2 text-center text-[10px] font-black text-slate-500">
++              <span>Explore</span>
++              <span>Map</span>
++              <span className="rounded-full bg-lakbay-green px-2 py-1 text-white">Scan</span>
++              <span>Orders</span>
++              <span>Pass</span>
++            </div>
++          </div>
++        </div>
++
++        <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
++          <p className="text-sm font-black uppercase tracking-[0.24em] text-lakbay-green">What this user can access</p>
++          <h3 className="mt-3 text-3xl font-black text-slate-950">{experience.dashboardName}</h3>
++          <p className="mt-3 text-sm leading-6 text-slate-500">{experience.uniqueMode}</p>
++          <div className="mt-6 grid gap-4 md:grid-cols-2">
++            <div>
++              <h4 className="font-black text-slate-900">Mobile features</h4>
++              <div className="mt-3 space-y-2">
++                {experience.mobileFeatures.map((feature) => (
++                  <div key={feature} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">{feature}</div>
++                ))}
++              </div>
++            </div>
++            <div>
++              <h4 className="font-black text-slate-900">Web dashboard features</h4>
++              <div className="mt-3 space-y-2">
++                {experience.webFeatures.map((feature) => (
++                  <div key={feature} className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-600">{feature}</div>
++                ))}
++              </div>
++            </div>
++          </div>
++        </div>
++      </section>
++    </div>
++  );
++}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/components/navigation.tsx /mnt/data/lakbay-upgrade/lakbay-localpass/components/navigation.tsx
+--- /mnt/data/lakbay-original/lakbay-localpass/components/navigation.tsx	2026-05-19 06:57:32.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/components/navigation.tsx	2026-05-19 07:44:41.818201248 +0000
+@@ -2,11 +2,12 @@
+ 
+ const links = [
+   { href: "/", label: "Home" },
+-  { href: "/destinations", label: "Destinations" },
+-  { href: "/map", label: "Map" },
+-  { href: "/qr", label: "LocalPass QR" },
+-  { href: "/dashboard", label: "Dashboards" },
+-  { href: "/admin", label: "Admin" }
++  { href: "/services", label: "Services" },
++  { href: "/food", label: "Food" },
++  { href: "/stays", label: "Stays" },
++  { href: "/transport", label: "Sakay" },
++  { href: "/mobile", label: "Mobile" },
++  { href: "/dashboard", label: "Dashboards" }
+ ];
+ 
+ export function Navigation() {
+@@ -20,7 +21,7 @@
+             <span className="block text-xs font-semibold uppercase tracking-[0.22em] text-lakbay-green">Tayabas</span>
+           </span>
+         </Link>
+-        <div className="hidden items-center gap-1 md:flex">
++        <div className="hidden items-center gap-1 lg:flex">
+           {links.map((link) => (
+             <Link key={link.href} href={link.href} className="rounded-full px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950">
+               {link.label}
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/docs/USER_JOURNEYS.md /mnt/data/lakbay-upgrade/lakbay-localpass/docs/USER_JOURNEYS.md
+--- /mnt/data/lakbay-original/lakbay-localpass/docs/USER_JOURNEYS.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/docs/USER_JOURNEYS.md	2026-05-19 07:46:04.641199977 +0000
+@@ -0,0 +1,56 @@
++# Lakbay LocalPass User Journeys
++
++## Tourist
++
++The tourist uses My Lakbay Pass to select a trip style, discover places, scan QR codes, order local food, request a vehicle, book a stay, request a guide, and track rewards.
++
++Main flows:
++
++1. Order food through Taste Trail
++2. Book a stay through Stay Match
++3. Request vehicle through Sakay Tayabas
++4. Request guide through Kwentong Gabay
++5. Scan QR and earn points
++6. Save coupons and badges
++
++## Merchant
++
++The merchant uses Local Seller Counter to manage products, accept food and pasalubong orders, prepare pickup requests, create coupons, and attach offers to tourism routes.
++
++Unique feature: Tourism Boost Card.
++
++## Accommodation Owner
++
++The accommodation owner uses Stay Tayabas Desk to manage room listings, booking requests, amenities, check-in instructions, and local add-ons.
++
++Unique feature: Stay Match tags rooms by tourism purpose.
++
++## Transport Provider
++
++The transport provider uses Sakay Tayabas Board to accept ride requests, publish vehicle packages, view pickup details, and complete tourist-friendly route loops.
++
++Unique feature: Route Buddy.
++
++## Tour Guide
++
++The guide uses Kwentong Gabay Desk to publish packages, accept tour requests, and use story cards during tours.
++
++Unique feature: Story Cards.
++
++## Event Organizer
++
++The event organizer uses Tayabas Events Desk to publish events and connect them to food, rides, stays, and QR challenges.
++
++Unique feature: Event Trip Builder.
++
++## Tourism Staff
++
++Tourism staff uses Tourism Command Center to manage official destinations, QR content, approvals, routes, events, and analytics.
++
++Unique feature: Tourism Heat Pulse.
++
++## Admin
++
++Admin uses Platform Control Room to manage users, roles, reports, platform settings, and trust queue items.
++
++Unique feature: Trust and Safety Queue.
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/lib/experience-data.ts /mnt/data/lakbay-upgrade/lakbay-localpass/lib/experience-data.ts
+--- /mnt/data/lakbay-original/lakbay-localpass/lib/experience-data.ts	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/lib/experience-data.ts	2026-05-19 07:42:35.477617659 +0000
+@@ -0,0 +1,617 @@
++import type { UserRole } from "./types";
++
++export type ExperienceItem = {
++  title: string;
++  description: string;
++  webAccess: string[];
++  mobileAccess: string[];
++  uniqueFeature: string;
++  primaryCta: string;
++  href: string;
++};
++
++export type RoleExperience = {
++  role: UserRole;
++  label: string;
++  dashboardName: string;
++  mobileName: string;
++  colorTag: string;
++  mission: string;
++  webFeatures: string[];
++  mobileFeatures: string[];
++  uniqueMode: string;
++  demoScenario: string;
++  quickActions: { label: string; href: string; hint: string }[];
++  inbox: { title: string; status: string; note: string }[];
++};
++
++export type FoodItem = {
++  id: string;
++  shop: string;
++  name: string;
++  category: "Meal" | "Pasalubong" | "Snack" | "Bundle";
++  price: string;
++  prepTime: string;
++  pickupPoint: string;
++  localPassReward: string;
++  trailTag: string;
++};
++
++export type StayOption = {
++  id: string;
++  name: string;
++  stayType: "Inn" | "Homestay" | "Farm Stay" | "Resort" | "Retreat House";
++  bestFor: string;
++  location: string;
++  room: string;
++  rate: string;
++  inclusions: string[];
++  matchTags: string[];
++};
++
++export type VehicleOption = {
++  id: string;
++  name: string;
++  vehicleType: "Tricycle" | "Van" | "Tour Vehicle" | "Terminal Pickup" | "Group Shuttle";
++  capacity: string;
++  route: string;
++  priceMode: string;
++  driverNote: string;
++  routeBadge: string;
++};
++
++export type TourPackage = {
++  id: string;
++  guide: string;
++  name: string;
++  duration: string;
++  idealFor: string;
++  meetingPoint: string;
++  includes: string[];
++  storyCards: string[];
++};
++
++export type DemoRequest = {
++  id: string;
++  kind: "Food Order" | "Stay Booking" | "Ride Request" | "Tour Request" | "Event Interest";
++  tourist: string;
++  provider: string;
++  status: "Pending" | "Confirmed" | "Preparing" | "Ready" | "On Route" | "Completed";
++  detail: string;
++  ownerRole: UserRole;
++};
++
++export const roleExperiences: Record<UserRole, RoleExperience> = {
++  tourist: {
++    role: "tourist",
++    label: "Tourist / Visitor",
++    dashboardName: "My Lakbay Pass",
++    mobileName: "Lakbay Pocket Pass",
++    colorTag: "Explorer",
++    mission: "Plan a Tayabas trip, scan QR stories, book local services, and collect rewards in one journey.",
++    webFeatures: [
++      "Build a route by travel style",
++      "View destination stories and map cards",
++      "Book stays through Stay Match",
++      "Request local vehicles through Route Buddy",
++      "Order food and pasalubong through Taste Trail",
++      "Track points, coupons, badges, and booking statuses"
++    ],
++    mobileFeatures: [
++      "Scan LocalPass QR at destinations",
++      "Use Nearby Now suggestions",
++      "Quick order food or pasalubong",
++      "Request ride from current stop",
++      "Show coupons to merchants",
++      "Receive booking confirmations"
++    ],
++    uniqueMode: "Lakbay Mode recommends places, food, rides, stays, and rewards based on Heritage Walk, Food Trip, Family Tour, Pilgrim Route, or Pasalubong Run.",
++    demoScenario: "A visitor scans the Basilica QR, earns points, orders budin for pickup, books a farm stay, and requests a Heritage Trike Loop.",
++    quickActions: [
++      { label: "Order food", href: "/food", hint: "Taste Trail preorder and pickup" },
++      { label: "Book stay", href: "/stays", hint: "Stay Match inquiry" },
++      { label: "Grab vehicle", href: "/transport", hint: "Route Buddy ride request" },
++      { label: "Scan QR", href: "/qr", hint: "Earn LocalPass points" }
++    ],
++    inbox: [
++      { title: "Budin pickup", status: "Ready", note: "Show LocalPass coupon at Tayabas Budin House." },
++      { title: "Heritage Trike Loop", status: "Confirmed", note: "Driver will meet you at Casa Comunidad." },
++      { title: "Farm stay inquiry", status: "Pending", note: "Host is reviewing guest count and date." }
++    ]
++  },
++  merchant: {
++    role: "merchant",
++    label: "Food Merchant / Pasalubong Seller",
++    dashboardName: "Local Seller Counter",
++    mobileName: "Seller Quick Counter",
++    colorTag: "MSME Boost",
++    mission: "Turn a small shop into a tourism-ready pickup, preorder, bundle, and coupon point.",
++    webFeatures: [
++      "Manage shop profile and photos",
++      "Add meals, pasalubong bundles, and daily availability",
++      "Confirm, prepare, and complete orders",
++      "Create LocalPass coupons",
++      "Attach products to nearby routes",
++      "View product clicks and QR-driven visits"
++    ],
++    mobileFeatures: [
++      "Receive new order alerts",
++      "Mark order as preparing or ready",
++      "Reply to tourist notes",
++      "Toggle product availability",
++      "Validate coupon claims",
++      "See daily pickup queue"
++    ],
++    uniqueMode: "Tourism Boost Card lets a seller attach products to specific routes like Basilica Snack Stop, Pasalubong Run, or Food Trip Trail.",
++    demoScenario: "A merchant receives a budin bundle preorder from a tourist who scanned a nearby QR story, prepares it, and marks it ready for pickup.",
++    quickActions: [
++      { label: "Manage orders", href: "/food", hint: "Accept and prepare tourist orders" },
++      { label: "Create coupon", href: "/dashboard?role=merchant", hint: "LocalPass reward offer" },
++      { label: "Attach to route", href: "/map", hint: "Appear near tourist stops" },
++      { label: "View analytics", href: "/dashboard?role=merchant", hint: "Clicks, claims, and visits" }
++    ],
++    inbox: [
++      { title: "Budin Bundle x2", status: "Preparing", note: "Pickup at 3:00 PM. Tourist used Food Trail badge." },
++      { title: "Cafe meal set", status: "Pending", note: "Student group asks for 12 pax quotation." },
++      { title: "Coupon claim", status: "Completed", note: "LocalPass 10 percent promo validated." }
++    ]
++  },
++  guide: {
++    role: "guide",
++    label: "Tour Guide",
++    dashboardName: "Kwentong Gabay Desk",
++    mobileName: "Guide Story Kit",
++    colorTag: "Story Keeper",
++    mission: "Package local knowledge into bookable heritage walks, food tours, and student learning routes.",
++    webFeatures: [
++      "Create tour packages",
++      "Set available dates and group size",
++      "Receive guide booking requests",
++      "Prepare route story cards",
++      "View ratings and feedback",
++      "Coordinate with transport and food partners"
++    ],
++    mobileFeatures: [
++      "Accept tour requests",
++      "Open meeting point map",
++      "Use story cards during tour",
++      "Check guest count and notes",
++      "Mark tour as started or completed",
++      "Ask for rating after tour"
++    ],
++    uniqueMode: "Story Cards convert oral history into short, reusable guide scripts tied to QR destinations.",
++    demoScenario: "A guide accepts a Heritage Walk request, opens Basilica and Casa Comunidad story cards, then completes the tour and asks for rating.",
++    quickActions: [
++      { label: "Tour requests", href: "/tours", hint: "Accept guide bookings" },
++      { label: "Story cards", href: "/tours", hint: "Open destination scripts" },
++      { label: "Route map", href: "/map", hint: "Guide the group" },
++      { label: "Ratings", href: "/dashboard?role=guide", hint: "View feedback" }
++    ],
++    inbox: [
++      { title: "Saturday Heritage Walk", status: "Pending", note: "6 guests, meeting at Basilica entrance." },
++      { title: "Student tour", status: "Confirmed", note: "Teacher requested civic history focus." },
++      { title: "Food Crawl", status: "Completed", note: "Rating request sent." }
++    ]
++  },
++  transport: {
++    role: "transport",
++    label: "Transport Provider",
++    dashboardName: "Sakay Tayabas Board",
++    mobileName: "Driver Route Board",
++    colorTag: "Route Buddy",
++    mission: "Offer tourist-friendly local rides, terminal pickups, loops, and group transfers.",
++    webFeatures: [
++      "Manage driver or operator profile",
++      "Publish route packages",
++      "Accept ride and transfer requests",
++      "Set service area and schedule",
++      "View pickup notes",
++      "Track completed tourist rides"
++    ],
++    mobileFeatures: [
++      "Accept incoming ride request",
++      "Open pickup and destination details",
++      "Call or message tourist",
++      "Mark arrived and completed",
++      "Toggle available status",
++      "View today’s route queue"
++    ],
++    uniqueMode: "Route Buddy offers tourism loops instead of generic ride hailing, such as Heritage Trike Loop and Pasalubong Stopover Ride.",
++    demoScenario: "A driver accepts a Casa Comunidad pickup, follows a Food Loop stopover, and completes the ride for LocalPass points.",
++    quickActions: [
++      { label: "Ride queue", href: "/transport", hint: "Accept Sakay requests" },
++      { label: "Route packages", href: "/transport", hint: "Publish tourist loops" },
++      { label: "Map stops", href: "/map", hint: "View pickup areas" },
++      { label: "Availability", href: "/dashboard?role=transport", hint: "Set active hours" }
++    ],
++    inbox: [
++      { title: "Terminal to Basilica", status: "Confirmed", note: "2 passengers, light baggage." },
++      { title: "Food Trip Loop", status: "Pending", note: "Group of 4 requests 4:30 PM pickup." },
++      { title: "Farm stay transfer", status: "On Route", note: "Drop-off at Rural Tayabas stay." }
++    ]
++  },
++  accommodation: {
++    role: "accommodation",
++    label: "Accommodation Owner",
++    dashboardName: "Stay Tayabas Desk",
++    mobileName: "Host Pocket Desk",
++    colorTag: "Stay Match",
++    mission: "Help inns, homestays, resorts, and farm stays receive tourism-linked booking inquiries.",
++    webFeatures: [
++      "Manage property listing",
++      "Add room types and amenities",
++      "Receive booking inquiries",
++      "Confirm or decline reservations",
++      "Offer breakfast, tour, or ride add-ons",
++      "View inquiry calendar"
++    ],
++    mobileFeatures: [
++      "Confirm booking request",
++      "Message guest",
++      "Update room availability",
++      "Send check-in instructions",
++      "Mark guest checked in",
++      "Offer local add-ons"
++    ],
++    uniqueMode: "Stay Match tags rooms by trip purpose, such as Best for Pilgrims, Family Tour, Quiet Retreat, or Budget Barkada Stay.",
++    demoScenario: "A host receives a Family Tour stay request, confirms a room, adds breakfast, and suggests a nearby Pasalubong Run.",
++    quickActions: [
++      { label: "Booking inbox", href: "/stays", hint: "Confirm stay requests" },
++      { label: "Room listing", href: "/stays", hint: "Edit room and amenities" },
++      { label: "Add-ons", href: "/dashboard?role=accommodation", hint: "Breakfast, tour, transport" },
++      { label: "Guest guide", href: "/destinations", hint: "Recommend nearby stops" }
++    ],
++    inbox: [
++      { title: "Family room inquiry", status: "Pending", note: "4 guests, one night, asks for parking." },
++      { title: "Pilgrim overnight", status: "Confirmed", note: "Late check-in instructions sent." },
++      { title: "Farm breakfast add-on", status: "Completed", note: "Added to guest itinerary." }
++    ]
++  },
++  event_organizer: {
++    role: "event_organizer",
++    label: "Event Organizer",
++    dashboardName: "Tayabas Events Desk",
++    mobileName: "Event Day Console",
++    colorTag: "Trip Builder",
++    mission: "Publish events that automatically connect to nearby food, rides, stays, and QR challenges.",
++    webFeatures: [
++      "Create event listing",
++      "Add venue, schedule, and registration link",
++      "Connect event to routes and merchants",
++      "Create event QR challenge",
++      "View interested visitors",
++      "Send event updates"
++    ],
++    mobileFeatures: [
++      "Post event update",
++      "Check interested visitors",
++      "Share event QR",
++      "Mark event as ongoing",
++      "Send announcement",
++      "Recommend nearby services"
++    ],
++    uniqueMode: "Event Trip Builder converts an event into a full visitor plan with where to eat, where to stay, how to get there, and what badge to earn.",
++    demoScenario: "An organizer publishes Heritage Weekend Walk and links it to Budin pickup, a trike loop, and nearby homestays.",
++    quickActions: [
++      { label: "Publish event", href: "/events", hint: "Create event cards" },
++      { label: "Event QR", href: "/events", hint: "Create challenge" },
++      { label: "Partner bundle", href: "/food", hint: "Link merchants" },
++      { label: "Visitor interest", href: "/dashboard?role=event_organizer", hint: "View saves and clicks" }
++    ],
++    inbox: [
++      { title: "Heritage Weekend Walk", status: "Confirmed", note: "46 interested visitors." },
++      { title: "Food merchant bundle", status: "Pending", note: "Waiting for 2 merchant confirmations." },
++      { title: "Event QR challenge", status: "Ready", note: "Badge reward configured." }
++    ]
++  },
++  tourism_staff: {
++    role: "tourism_staff",
++    label: "City Tourism Staff",
++    dashboardName: "Tourism Command Center",
++    mobileName: "Field Tourism Console",
++    colorTag: "City Pulse",
++    mission: "Manage official tourism content, approvals, QR stories, events, and visitor activity insights.",
++    webFeatures: [
++      "Manage official destinations",
++      "Create QR heritage stories",
++      "Approve businesses, guides, rides, and stays",
++      "Curate routes and event calendars",
++      "View tourism heat pulse analytics",
++      "Export reports for planning"
++    ],
++    mobileFeatures: [
++      "Preview QR story on site",
++      "Review visitor feedback",
++      "Approve urgent listing edits",
++      "Monitor active events",
++      "Feature under-promoted spots",
++      "Check live scan pulse"
++    ],
++    uniqueMode: "Tourism Heat Pulse shows which destinations, merchants, routes, and event links are gaining visitor engagement.",
++    demoScenario: "Tourism staff approves a farm stay listing, updates Casa Comunidad QR content, and sees that Food Loop is driving MSME clicks.",
++    quickActions: [
++      { label: "Approvals", href: "/admin", hint: "Review partner listings" },
++      { label: "QR stories", href: "/qr", hint: "Manage heritage content" },
++      { label: "Routes", href: "/map", hint: "Curate city itineraries" },
++      { label: "Analytics", href: "/dashboard?role=tourism_staff", hint: "Tourism Heat Pulse" }
++    ],
++    inbox: [
++      { title: "Farm stay listing", status: "Pending", note: "Needs photo and amenities review." },
++      { title: "Casa QR story", status: "Ready", note: "Updated civic history content." },
++      { title: "Merchant coupon", status: "Confirmed", note: "Approved for Food Trail." }
++    ]
++  },
++  admin: {
++    role: "admin",
++    label: "System Admin",
++    dashboardName: "Platform Control Room",
++    mobileName: "Admin Watch Panel",
++    colorTag: "Trust Queue",
++    mission: "Protect platform data, roles, permissions, approvals, and operational reliability.",
++    webFeatures: [
++      "Manage users and roles",
++      "Review trust and safety queue",
++      "Suspend or restore listings",
++      "Audit content changes",
++      "Configure categories and badges",
++      "Check system health"
++    ],
++    mobileFeatures: [
++      "Approve urgent account",
++      "Lock suspicious listing",
++      "View platform alerts",
++      "Check role changes",
++      "Open audit trail",
++      "Monitor deployment notes"
++    ],
++    uniqueMode: "Trust and Safety Queue highlights unverified merchants, duplicate listings, reported guides, and suspicious booking patterns.",
++    demoScenario: "Admin assigns roles, approves a transport provider, hides a duplicate listing, and checks the audit trail.",
++    quickActions: [
++      { label: "User roles", href: "/admin", hint: "Assign access" },
++      { label: "Safety queue", href: "/admin", hint: "Review reports" },
++      { label: "System settings", href: "/dashboard?role=admin", hint: "Configure demo" },
++      { label: "Audit logs", href: "/admin", hint: "Track changes" }
++    ],
++    inbox: [
++      { title: "New transport account", status: "Pending", note: "Needs verification before listing appears." },
++      { title: "Duplicate stay listing", status: "Pending", note: "Suggested merge with existing property." },
++      { title: "Reported guide profile", status: "Confirmed", note: "Reviewed and cleared." }
++    ]
++  }
++};
++
++export const experienceItems: ExperienceItem[] = [
++  {
++    title: "Taste Trail",
++    description: "Tourists preorder food, reserve pasalubong bundles, and unlock food badges while merchants manage preparation and pickup.",
++    webAccess: ["Browse shops", "Build basket", "Choose pickup or delivery request", "Track order status"],
++    mobileAccess: ["Quick reorder", "Show pickup QR", "Claim coupon", "Receive ready alert"],
++    uniqueFeature: "Food orders are tied to tourism routes and QR badges, not just delivery.",
++    primaryCta: "Order food demo",
++    href: "/food"
++  },
++  {
++    title: "Stay Match",
++    description: "Tourists book inns, homestays, farm stays, and retreat houses based on trip style while hosts manage inquiries.",
++    webAccess: ["Compare stay tags", "Select date", "Send booking request", "Receive confirmation"],
++    mobileAccess: ["Book from itinerary", "Message host", "View check-in guide", "Save nearby stops"],
++    uniqueFeature: "Rooms are recommended by tourism purpose such as pilgrim, family, retreat, or barkada stay.",
++    primaryCta: "Book stay demo",
++    href: "/stays"
++  },
++  {
++    title: "Sakay Tayabas",
++    description: "Tourists request local tricycles, vans, terminal pickups, and route loops while transport providers manage a queue.",
++    webAccess: ["Choose pickup", "Pick route package", "Send ride request", "Track driver status"],
++    mobileAccess: ["Request from current stop", "Call driver", "View pickup note", "Complete ride"],
++    uniqueFeature: "Route Buddy promotes tourism loops instead of copying generic ride hailing.",
++    primaryCta: "Grab vehicle demo",
++    href: "/transport"
++  },
++  {
++    title: "Kwentong Gabay",
++    description: "Guides publish story-led routes, accept tour bookings, and use digital story cards during walks.",
++    webAccess: ["View packages", "Request guide", "Choose group size", "Add learning focus"],
++    mobileAccess: ["Open story cards", "View meeting point", "Start tour", "Request rating"],
++    uniqueFeature: "Tour guides get route scripts connected to QR heritage stories.",
++    primaryCta: "Tour guide demo",
++    href: "/tours"
++  },
++  {
++    title: "Event Trip Builder",
++    description: "Events become complete tourism plans with food, rides, stays, QR challenges, and merchant bundles.",
++    webAccess: ["Publish event", "Link route", "Add partners", "Monitor interest"],
++    mobileAccess: ["Event day update", "Share QR", "Send announcement", "Check attendees"],
++    uniqueFeature: "Every event recommends where to eat, where to stay, and how to get there.",
++    primaryCta: "Events demo",
++    href: "/events"
++  }
++];
++
++export const foodItems: FoodItem[] = [
++  {
++    id: "budin-box",
++    shop: "Tayabas Budin House",
++    name: "Budin Box Preorder",
++    category: "Pasalubong",
++    price: "₱180",
++    prepTime: "45 minutes",
++    pickupPoint: "Poblacion pickup counter",
++    localPassReward: "+25 Taste Trail points",
++    trailTag: "Pasalubong Run"
++  },
++  {
++    id: "heritage-cafe-set",
++    shop: "Heritage Cafe Tayabas",
++    name: "Heritage Snack Set",
++    category: "Snack",
++    price: "₱150",
++    prepTime: "20 minutes",
++    pickupPoint: "Near heritage route",
++    localPassReward: "+15 Food Explorer points",
++    trailTag: "Heritage Walk"
++  },
++  {
++    id: "family-food-bundle",
++    shop: "Local Eats Demo Kitchen",
++    name: "Family Food Trip Bundle",
++    category: "Bundle",
++    price: "₱680",
++    prepTime: "60 minutes",
++    pickupPoint: "Food Loop counter",
++    localPassReward: "+40 Family Tour points",
++    trailTag: "Family Day Tour"
++  }
++];
++
++export const stayOptions: StayOption[] = [
++  {
++    id: "stay-heritage-inn",
++    name: "Poblacion Heritage Inn",
++    stayType: "Inn",
++    bestFor: "Pilgrim Route and Heritage Walk",
++    location: "Near Basilica and Casa Comunidad",
++    room: "Standard twin room",
++    rate: "₱1,400 per night",
++    inclusions: ["Walkable heritage stops", "Basic breakfast option", "Late check-in request"],
++    matchTags: ["Best for pilgrims", "Near heritage sites", "Budget friendly"]
++  },
++  {
++    id: "stay-farm-retreat",
++    name: "Tayabas Farm Stay Demo",
++    stayType: "Farm Stay",
++    bestFor: "Family Tour and Quiet Retreat",
++    location: "Rural Tayabas",
++    room: "Family room with breakfast add-on",
++    rate: "₱2,800 per night",
++    inclusions: ["Farm breakfast add-on", "Parking", "Nature side trip suggestion"],
++    matchTags: ["Best for families", "Quiet retreat", "Workation friendly"]
++  },
++  {
++    id: "stay-barkada-homestay",
++    name: "Barkada Homestay Hub",
++    stayType: "Homestay",
++    bestFor: "Food Trip and Barkada Adventure",
++    location: "City Proper",
++    room: "Group room for 4 to 6 pax",
++    rate: "₱3,200 per night",
++    inclusions: ["Group room", "Nearby food trail", "Transport referral"],
++    matchTags: ["Budget barkada stay", "Near food stops", "Group friendly"]
++  }
++];
++
++export const vehicleOptions: VehicleOption[] = [
++  {
++    id: "heritage-trike-loop",
++    name: "Heritage Trike Loop",
++    vehicleType: "Tricycle",
++    capacity: "1 to 3 passengers",
++    route: "Basilica to Casa Comunidad to Budin Trail",
++    priceMode: "Demo fixed package inquiry",
++    driverNote: "Best for short city heritage route.",
++    routeBadge: "Heritage Rider"
++  },
++  {
++    id: "terminal-pickup",
++    name: "Terminal Pickup Assist",
++    vehicleType: "Terminal Pickup",
++    capacity: "1 to 4 passengers",
++    route: "Terminal to stay, basilica, or food stop",
++    priceMode: "Driver confirms fare before trip",
++    driverNote: "Good for first-time visitors arriving by public transport.",
++    routeBadge: "Arrival Buddy"
++  },
++  {
++    id: "family-van-day-tour",
++    name: "Family Van Day Tour",
++    vehicleType: "Van",
++    capacity: "5 to 10 passengers",
++    route: "Family route, food stop, pasalubong, stay transfer",
++    priceMode: "Quote request",
++    driverNote: "Best for families and group tours.",
++    routeBadge: "Group Explorer"
++  }
++];
++
++export const tourPackages: TourPackage[] = [
++  {
++    id: "heritage-walk",
++    guide: "Lakbay Guide Juan",
++    name: "Kwentong Tayabas Heritage Walk",
++    duration: "2 hours",
++    idealFor: "Students, balikbayans, first-time visitors",
++    meetingPoint: "Basilica entrance",
++    includes: ["Basilica story", "Casa Comunidad stop", "Photo prompts", "Pasalubong recommendation"],
++    storyCards: ["Basilica etiquette", "Civic history", "Old Tayabas trivia"]
++  },
++  {
++    id: "food-crawl",
++    guide: "Lakbay Guide Maria",
++    name: "Taste Trail Food Crawl",
++    duration: "3 hours",
++    idealFor: "Barkada and families",
++    meetingPoint: "Food Loop marker",
++    includes: ["Cafe stop", "Budin pickup", "Merchant stories", "Taste Trail badge"],
++    storyCards: ["Budin story", "Local cafe scene", "Pasalubong culture"]
++  },
++  {
++    id: "student-tour",
++    guide: "Lakbay Edu Guide",
++    name: "Student Educational Route",
++    duration: "Half day",
++    idealFor: "Schools and youth groups",
++    meetingPoint: "Casa Comunidad",
++    includes: ["History script", "Worksheet prompts", "Group QR challenge", "Feedback form"],
++    storyCards: ["Civic identity", "Heritage preservation", "Local innovation"]
++  }
++];
++
++export const demoRequests: DemoRequest[] = [
++  {
++    id: "REQ-FOOD-001",
++    kind: "Food Order",
++    tourist: "Demo Tourist",
++    provider: "Tayabas Budin House",
++    status: "Ready",
++    detail: "Budin Box x2, pickup at 3:00 PM, LocalPass coupon applied.",
++    ownerRole: "merchant"
++  },
++  {
++    id: "REQ-STAY-001",
++    kind: "Stay Booking",
++    tourist: "Family Visitor",
++    provider: "Tayabas Farm Stay Demo",
++    status: "Pending",
++    detail: "Family room, 4 guests, one night, asks for parking and breakfast.",
++    ownerRole: "accommodation"
++  },
++  {
++    id: "REQ-RIDE-001",
++    kind: "Ride Request",
++    tourist: "Balikbayan Guest",
++    provider: "Local Transport Desk",
++    status: "Confirmed",
++    detail: "Terminal pickup to Basilica, 2 passengers, light baggage.",
++    ownerRole: "transport"
++  },
++  {
++    id: "REQ-TOUR-001",
++    kind: "Tour Request",
++    tourist: "SLSU Student Group",
++    provider: "Lakbay Guide Juan",
++    status: "Pending",
++    detail: "Heritage Walk, 12 students, civic history focus.",
++    ownerRole: "guide"
++  },
++  {
++    id: "REQ-EVENT-001",
++    kind: "Event Interest",
++    tourist: "Weekend Visitor",
++    provider: "Heritage Weekend Walk",
++    status: "Confirmed",
++    detail: "Interested visitor saved event with food and ride recommendations.",
++    ownerRole: "event_organizer"
++  }
++];
++
++export const tripStyles = ["Heritage Walk", "Food Trip", "Family Day Tour", "Barkada Adventure", "Pilgrim Route", "Pasalubong Run"];
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/supabase/policies.sql /mnt/data/lakbay-upgrade/lakbay-localpass/supabase/policies.sql
+--- /mnt/data/lakbay-original/lakbay-localpass/supabase/policies.sql	2026-05-19 06:58:57.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/supabase/policies.sql	2026-05-19 07:45:46.710067148 +0000
+@@ -102,3 +102,73 @@
+ create policy "Public can read reviews"
+ on public.reviews for select
+ using (true);
++
++alter table public.products enable row level security;
++alter table public.stay_rooms enable row level security;
++alter table public.vehicle_packages enable row level security;
++alter table public.tour_packages enable row level security;
++alter table public.service_requests enable row level security;
++alter table public.audit_logs enable row level security;
++
++create policy "Public can read available products"
++on public.products for select
++using (is_available = true);
++
++create policy "Owners can manage products"
++on public.products for all
++using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
++with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
++
++create policy "Public can read available stay rooms"
++on public.stay_rooms for select
++using (is_available = true);
++
++create policy "Owners can manage stay rooms"
++on public.stay_rooms for all
++using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
++with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
++
++create policy "Public can read available vehicle packages"
++on public.vehicle_packages for select
++using (is_available = true);
++
++create policy "Owners can manage vehicle packages"
++on public.vehicle_packages for all
++using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
++with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
++
++create policy "Public can read available tour packages"
++on public.tour_packages for select
++using (is_available = true);
++
++create policy "Owners can manage tour packages"
++on public.tour_packages for all
++using (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'))
++with check (exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid()) or public.current_user_role() in ('tourism_staff', 'admin'));
++
++create policy "Users can create service requests"
++on public.service_requests for insert
++with check (requester_id = auth.uid() or requester_id is null);
++
++create policy "Users and providers can read service requests"
++on public.service_requests for select
++using (
++  requester_id = auth.uid()
++  or public.current_user_role() in ('tourism_staff', 'admin')
++  or exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid())
++);
++
++create policy "Providers can update related service requests"
++on public.service_requests for update
++using (
++  public.current_user_role() in ('tourism_staff', 'admin')
++  or exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid())
++)
++with check (
++  public.current_user_role() in ('tourism_staff', 'admin')
++  or exists (select 1 from public.businesses b where b.id = business_id and b.owner_id = auth.uid())
++);
++
++create policy "Admins can read audit logs"
++on public.audit_logs for select
++using (public.current_user_role() in ('tourism_staff', 'admin'));
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/supabase/schema.sql /mnt/data/lakbay-upgrade/lakbay-localpass/supabase/schema.sql
+--- /mnt/data/lakbay-original/lakbay-localpass/supabase/schema.sql	2026-05-19 06:59:27.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/supabase/schema.sql	2026-05-19 07:45:46.659816057 +0000
+@@ -166,3 +166,115 @@
+ create trigger inquiries_touch_updated_at
+ before update on public.inquiries
+ for each row execute function public.touch_updated_at();
++
++create table if not exists public.products (
++  id uuid primary key default gen_random_uuid(),
++  business_id uuid references public.businesses(id) on delete cascade,
++  name text not null,
++  category text not null check (category in ('meal', 'pasalubong', 'snack', 'bundle')),
++  price numeric(10, 2) not null default 0,
++  prep_time text,
++  pickup_point text,
++  trail_tag text,
++  localpass_points integer not null default 0,
++  is_available boolean not null default true,
++  created_at timestamptz not null default now(),
++  updated_at timestamptz not null default now()
++);
++
++create table if not exists public.stay_rooms (
++  id uuid primary key default gen_random_uuid(),
++  business_id uuid references public.businesses(id) on delete cascade,
++  room_name text not null,
++  stay_type text not null,
++  best_for text not null,
++  nightly_rate numeric(10, 2) not null default 0,
++  max_guests integer not null default 2,
++  amenities text[] not null default '{}',
++  match_tags text[] not null default '{}',
++  is_available boolean not null default true,
++  created_at timestamptz not null default now(),
++  updated_at timestamptz not null default now()
++);
++
++create table if not exists public.vehicle_packages (
++  id uuid primary key default gen_random_uuid(),
++  business_id uuid references public.businesses(id) on delete cascade,
++  name text not null,
++  vehicle_type text not null,
++  capacity text,
++  route text not null,
++  price_mode text,
++  route_badge text,
++  is_available boolean not null default true,
++  created_at timestamptz not null default now(),
++  updated_at timestamptz not null default now()
++);
++
++create table if not exists public.tour_packages (
++  id uuid primary key default gen_random_uuid(),
++  business_id uuid references public.businesses(id) on delete cascade,
++  name text not null,
++  duration text not null,
++  ideal_for text,
++  meeting_point text,
++  includes text[] not null default '{}',
++  story_cards text[] not null default '{}',
++  is_available boolean not null default true,
++  created_at timestamptz not null default now(),
++  updated_at timestamptz not null default now()
++);
++
++create table if not exists public.service_requests (
++  id uuid primary key default gen_random_uuid(),
++  requester_id uuid references public.profiles(id),
++  business_id uuid references public.businesses(id),
++  request_type text not null check (request_type in ('food_order', 'stay_booking', 'ride_request', 'tour_request', 'event_interest')),
++  item_name text not null,
++  trip_style text,
++  preferred_date date,
++  preferred_time text,
++  quantity integer,
++  guest_count integer,
++  pickup_point text,
++  destination text,
++  message text,
++  status text not null default 'pending' check (status in ('draft', 'pending', 'confirmed', 'preparing', 'ready', 'on_route', 'completed', 'declined', 'cancelled')),
++  created_at timestamptz not null default now(),
++  updated_at timestamptz not null default now()
++);
++
++create table if not exists public.audit_logs (
++  id uuid primary key default gen_random_uuid(),
++  actor_id uuid references public.profiles(id),
++  action text not null,
++  entity_type text not null,
++  entity_id uuid,
++  notes text,
++  created_at timestamptz not null default now()
++);
++
++drop trigger if exists products_touch_updated_at on public.products;
++create trigger products_touch_updated_at
++before update on public.products
++for each row execute function public.touch_updated_at();
++
++drop trigger if exists stay_rooms_touch_updated_at on public.stay_rooms;
++create trigger stay_rooms_touch_updated_at
++before update on public.stay_rooms
++for each row execute function public.touch_updated_at();
++
++drop trigger if exists vehicle_packages_touch_updated_at on public.vehicle_packages;
++create trigger vehicle_packages_touch_updated_at
++before update on public.vehicle_packages
++for each row execute function public.touch_updated_at();
++
++drop trigger if exists tour_packages_touch_updated_at on public.tour_packages;
++create trigger tour_packages_touch_updated_at
++before update on public.tour_packages
++for each row execute function public.touch_updated_at();
++
++drop trigger if exists service_requests_touch_updated_at on public.service_requests;
++create trigger service_requests_touch_updated_at
++before update on public.service_requests
++for each row execute function public.touch_updated_at();
+diff -ruN /mnt/data/lakbay-original/lakbay-localpass/supabase/seed.sql /mnt/data/lakbay-upgrade/lakbay-localpass/supabase/seed.sql
+--- /mnt/data/lakbay-original/lakbay-localpass/supabase/seed.sql	2026-05-19 06:58:57.000000000 +0000
++++ /mnt/data/lakbay-upgrade/lakbay-localpass/supabase/seed.sql	2026-05-19 07:45:46.683233442 +0000
+@@ -38,3 +38,52 @@
+   ('Mayohan Festival Demo Listing', 'Tayabas City Proper', '2026-05-15', 'Sample event listing for calendar, route recommendations, QR challenges, and merchant promos.', true),
+   ('Heritage Weekend Walk', 'Poblacion Heritage Loop', '2026-06-08', 'Demo guided walk showing how tourism staff and guides can publish bookable activities.', true)
+ on conflict do nothing;
++
++insert into public.products (business_id, name, category, price, prep_time, pickup_point, trail_tag, localpass_points)
++select id, 'Budin Box Preorder', 'pasalubong', 180, '45 minutes', 'Poblacion pickup counter', 'Pasalubong Run', 25
++from public.businesses where name = 'Tayabas Budin House'
++on conflict do nothing;
++
++insert into public.products (business_id, name, category, price, prep_time, pickup_point, trail_tag, localpass_points)
++select id, 'Heritage Snack Set', 'snack', 150, '20 minutes', 'Near heritage route', 'Heritage Walk', 15
++from public.businesses where name = 'Heritage Cafe Tayabas'
++on conflict do nothing;
++
++insert into public.stay_rooms (business_id, room_name, stay_type, best_for, nightly_rate, max_guests, amenities, match_tags)
++select id, 'Family room with breakfast add-on', 'Farm Stay', 'Family Tour and Quiet Retreat', 2800, 5,
++array['Farm breakfast add-on', 'Parking', 'Nature side trip suggestion'],
++array['Best for families', 'Quiet retreat', 'Workation friendly']
++from public.businesses where name = 'Tayabas Farm Stay Demo'
++on conflict do nothing;
++
++insert into public.vehicle_packages (business_id, name, vehicle_type, capacity, route, price_mode, route_badge)
++select id, 'Heritage Trike Loop', 'Tricycle', '1 to 3 passengers', 'Basilica to Casa Comunidad to Budin Trail', 'Demo fixed package inquiry', 'Heritage Rider'
++from public.businesses where name = 'Local Transport Desk'
++on conflict do nothing;
++
++insert into public.vehicle_packages (business_id, name, vehicle_type, capacity, route, price_mode, route_badge)
++select id, 'Terminal Pickup Assist', 'Terminal Pickup', '1 to 4 passengers', 'Terminal to stay, basilica, or food stop', 'Driver confirms fare before trip', 'Arrival Buddy'
++from public.businesses where name = 'Local Transport Desk'
++on conflict do nothing;
++
++insert into public.tour_packages (business_id, name, duration, ideal_for, meeting_point, includes, story_cards)
++select id, 'Kwentong Tayabas Heritage Walk', '2 hours', 'Students, balikbayans, first-time visitors', 'Basilica entrance',
++array['Basilica story', 'Casa Comunidad stop', 'Photo prompts', 'Pasalubong recommendation'],
++array['Basilica etiquette', 'Civic history', 'Old Tayabas trivia']
++from public.businesses where name = 'Lakbay Guide Juan'
++on conflict do nothing;
++
++insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
++select id, 'food_order', 'Budin Box Preorder', 'Food Trip', '2026-06-10', '3:00 PM', 2, null, 'Poblacion pickup counter', null, 'Please prepare as pasalubong after our heritage walk.', 'ready'
++from public.businesses where name = 'Tayabas Budin House'
++on conflict do nothing;
++
++insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
++select id, 'stay_booking', 'Family room with breakfast add-on', 'Family Day Tour', '2026-06-10', null, null, 4, null, null, 'Need parking and breakfast option.', 'pending'
++from public.businesses where name = 'Tayabas Farm Stay Demo'
++on conflict do nothing;
++
++insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
++select id, 'ride_request', 'Heritage Trike Loop', 'Heritage Walk', '2026-06-10', '4:30 PM', null, 3, 'Casa Comunidad', 'Budin and Pasalubong Trail', 'Please include a short pasalubong stopover.', 'confirmed'
++from public.businesses where name = 'Local Transport Desk'
++on conflict do nothing;

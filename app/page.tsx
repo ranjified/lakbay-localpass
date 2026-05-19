@@ -28,8 +28,8 @@ export default function HomePage() {
               <Link href="/login" className="rounded-full bg-lakbay-green px-6 py-4 text-center text-sm font-black text-white shadow-soft transition hover:bg-slate-950">
                 Try demo login
               </Link>
-              <Link href="/map" className="rounded-full border border-slate-300 bg-white px-6 py-4 text-center text-sm font-black text-slate-800 transition hover:border-lakbay-green hover:text-lakbay-green">
-                View map demo
+              <Link href="/services" className="rounded-full border border-slate-300 bg-white px-6 py-4 text-center text-sm font-black text-slate-800 transition hover:border-lakbay-green hover:text-lakbay-green">
+                Open service demos
               </Link>
             </div>
           </div>
@@ -59,6 +59,26 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="rounded-[2rem] bg-slate-950 p-8 text-white shadow-soft md:p-10">
+          <p className="text-sm font-black uppercase tracking-[0.25em] text-lakbay-gold">Demo journeys</p>
+          <h2 className="mt-3 text-3xl font-black md:text-4xl">Book, ride, order, scan, and manage from one platform.</h2>
+          <div className="mt-6 grid gap-3 md:grid-cols-5">
+            {[
+              ["Taste Trail", "/food"],
+              ["Stay Match", "/stays"],
+              ["Sakay Tayabas", "/transport"],
+              ["Kwentong Gabay", "/tours"],
+              ["Mobile Demo", "/mobile"]
+            ].map(([label, href]) => (
+              <Link key={label} href={href} className="rounded-2xl bg-white/10 px-4 py-4 text-center text-sm font-black text-white transition hover:bg-white hover:text-slate-950">
+                {label}
+              </Link>
+            ))}
           </div>
         </div>
       </section>

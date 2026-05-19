@@ -166,3 +166,115 @@ drop trigger if exists inquiries_touch_updated_at on public.inquiries;
 create trigger inquiries_touch_updated_at
 before update on public.inquiries
 for each row execute function public.touch_updated_at();
+
+create table if not exists public.products (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid references public.businesses(id) on delete cascade,
+  name text not null,
+  category text not null check (category in ('meal', 'pasalubong', 'snack', 'bundle')),
+  price numeric(10, 2) not null default 0,
+  prep_time text,
+  pickup_point text,
+  trail_tag text,
+  localpass_points integer not null default 0,
+  is_available boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.stay_rooms (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid references public.businesses(id) on delete cascade,
+  room_name text not null,
+  stay_type text not null,
+  best_for text not null,
+  nightly_rate numeric(10, 2) not null default 0,
+  max_guests integer not null default 2,
+  amenities text[] not null default '{}',
+  match_tags text[] not null default '{}',
+  is_available boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.vehicle_packages (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid references public.businesses(id) on delete cascade,
+  name text not null,
+  vehicle_type text not null,
+  capacity text,
+  route text not null,
+  price_mode text,
+  route_badge text,
+  is_available boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.tour_packages (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid references public.businesses(id) on delete cascade,
+  name text not null,
+  duration text not null,
+  ideal_for text,
+  meeting_point text,
+  includes text[] not null default '{}',
+  story_cards text[] not null default '{}',
+  is_available boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.service_requests (
+  id uuid primary key default gen_random_uuid(),
+  requester_id uuid references public.profiles(id),
+  business_id uuid references public.businesses(id),
+  request_type text not null check (request_type in ('food_order', 'stay_booking', 'ride_request', 'tour_request', 'event_interest')),
+  item_name text not null,
+  trip_style text,
+  preferred_date date,
+  preferred_time text,
+  quantity integer,
+  guest_count integer,
+  pickup_point text,
+  destination text,
+  message text,
+  status text not null default 'pending' check (status in ('draft', 'pending', 'confirmed', 'preparing', 'ready', 'on_route', 'completed', 'declined', 'cancelled')),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.audit_logs (
+  id uuid primary key default gen_random_uuid(),
+  actor_id uuid references public.profiles(id),
+  action text not null,
+  entity_type text not null,
+  entity_id uuid,
+  notes text,
+  created_at timestamptz not null default now()
+);
+
+drop trigger if exists products_touch_updated_at on public.products;
+create trigger products_touch_updated_at
+before update on public.products
+for each row execute function public.touch_updated_at();
+
+drop trigger if exists stay_rooms_touch_updated_at on public.stay_rooms;
+create trigger stay_rooms_touch_updated_at
+before update on public.stay_rooms
+for each row execute function public.touch_updated_at();
+
+drop trigger if exists vehicle_packages_touch_updated_at on public.vehicle_packages;
+create trigger vehicle_packages_touch_updated_at
+before update on public.vehicle_packages
+for each row execute function public.touch_updated_at();
+
+drop trigger if exists tour_packages_touch_updated_at on public.tour_packages;
+create trigger tour_packages_touch_updated_at
+before update on public.tour_packages
+for each row execute function public.touch_updated_at();
+
+drop trigger if exists service_requests_touch_updated_at on public.service_requests;
+create trigger service_requests_touch_updated_at
+before update on public.service_requests
+for each row execute function public.touch_updated_at();

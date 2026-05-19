@@ -38,3 +38,52 @@ values
   ('Mayohan Festival Demo Listing', 'Tayabas City Proper', '2026-05-15', 'Sample event listing for calendar, route recommendations, QR challenges, and merchant promos.', true),
   ('Heritage Weekend Walk', 'Poblacion Heritage Loop', '2026-06-08', 'Demo guided walk showing how tourism staff and guides can publish bookable activities.', true)
 on conflict do nothing;
+
+insert into public.products (business_id, name, category, price, prep_time, pickup_point, trail_tag, localpass_points)
+select id, 'Budin Box Preorder', 'pasalubong', 180, '45 minutes', 'Poblacion pickup counter', 'Pasalubong Run', 25
+from public.businesses where name = 'Tayabas Budin House'
+on conflict do nothing;
+
+insert into public.products (business_id, name, category, price, prep_time, pickup_point, trail_tag, localpass_points)
+select id, 'Heritage Snack Set', 'snack', 150, '20 minutes', 'Near heritage route', 'Heritage Walk', 15
+from public.businesses where name = 'Heritage Cafe Tayabas'
+on conflict do nothing;
+
+insert into public.stay_rooms (business_id, room_name, stay_type, best_for, nightly_rate, max_guests, amenities, match_tags)
+select id, 'Family room with breakfast add-on', 'Farm Stay', 'Family Tour and Quiet Retreat', 2800, 5,
+array['Farm breakfast add-on', 'Parking', 'Nature side trip suggestion'],
+array['Best for families', 'Quiet retreat', 'Workation friendly']
+from public.businesses where name = 'Tayabas Farm Stay Demo'
+on conflict do nothing;
+
+insert into public.vehicle_packages (business_id, name, vehicle_type, capacity, route, price_mode, route_badge)
+select id, 'Heritage Trike Loop', 'Tricycle', '1 to 3 passengers', 'Basilica to Casa Comunidad to Budin Trail', 'Demo fixed package inquiry', 'Heritage Rider'
+from public.businesses where name = 'Local Transport Desk'
+on conflict do nothing;
+
+insert into public.vehicle_packages (business_id, name, vehicle_type, capacity, route, price_mode, route_badge)
+select id, 'Terminal Pickup Assist', 'Terminal Pickup', '1 to 4 passengers', 'Terminal to stay, basilica, or food stop', 'Driver confirms fare before trip', 'Arrival Buddy'
+from public.businesses where name = 'Local Transport Desk'
+on conflict do nothing;
+
+insert into public.tour_packages (business_id, name, duration, ideal_for, meeting_point, includes, story_cards)
+select id, 'Kwentong Tayabas Heritage Walk', '2 hours', 'Students, balikbayans, first-time visitors', 'Basilica entrance',
+array['Basilica story', 'Casa Comunidad stop', 'Photo prompts', 'Pasalubong recommendation'],
+array['Basilica etiquette', 'Civic history', 'Old Tayabas trivia']
+from public.businesses where name = 'Lakbay Guide Juan'
+on conflict do nothing;
+
+insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
+select id, 'food_order', 'Budin Box Preorder', 'Food Trip', '2026-06-10', '3:00 PM', 2, null, 'Poblacion pickup counter', null, 'Please prepare as pasalubong after our heritage walk.', 'ready'
+from public.businesses where name = 'Tayabas Budin House'
+on conflict do nothing;
+
+insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
+select id, 'stay_booking', 'Family room with breakfast add-on', 'Family Day Tour', '2026-06-10', null, null, 4, null, null, 'Need parking and breakfast option.', 'pending'
+from public.businesses where name = 'Tayabas Farm Stay Demo'
+on conflict do nothing;
+
+insert into public.service_requests (business_id, request_type, item_name, trip_style, preferred_date, preferred_time, quantity, guest_count, pickup_point, destination, message, status)
+select id, 'ride_request', 'Heritage Trike Loop', 'Heritage Walk', '2026-06-10', '4:30 PM', null, 3, 'Casa Comunidad', 'Budin and Pasalubong Trail', 'Please include a short pasalubong stopover.', 'confirmed'
+from public.businesses where name = 'Local Transport Desk'
+on conflict do nothing;

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { roleExperiences, roleOrder, serviceModules } from "@/lib/mock-data";
+import { keyMetrics, validationGroups } from "@/lib/product-brief";
 
 export default function ServicesPage() {
   return (
@@ -12,6 +13,24 @@ export default function ServicesPage() {
           <p className="mt-5 max-w-3xl text-base leading-7 text-slate-200">Each module is shaped around Tayabas visitor movement: discover a stop, scan a story, spend locally, and let the right role manage the request.</p>
           </div>
         </div>
+
+        <section className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="local-card rounded-[1.25rem] p-6">
+            <p className="stamp-label rounded-full px-3 py-1 text-[10px] font-black tracking-[0.18em]">MVP demo rule</p>
+            <h2 className="mt-4 text-2xl font-black text-lakbay-deep">Simulate the expensive parts, prove the local flow.</h2>
+            <p className="mt-3 text-sm leading-6 text-lakbay-deep/65">
+              Payments, delivery logistics, real-time ride dispatch, AI recommendations, and rewards redemption stay as inquiry/status demos first. The pitch focuses on discovery, QR stories, local spending, requests, dashboards, and seeded Tayabas data.
+            </p>
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {keyMetrics.slice(0, 6).map((metric) => (
+              <article key={metric.label} className="route-ticket rounded-xl p-4">
+                <h3 className="text-sm font-black text-lakbay-deep">{metric.label}</h3>
+                <p className="mt-2 text-xs leading-5 text-lakbay-deep/60">{metric.whyItMatters}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {serviceModules.map((module) => (
@@ -46,6 +65,20 @@ export default function ServicesPage() {
                 </article>
               );
             })}
+          </div>
+        </section>
+
+        <section className="local-card mt-8 rounded-[1.25rem] p-6">
+          <h2 className="text-2xl font-black text-lakbay-deep">Validation plan from the product brief</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            {validationGroups.map((group) => (
+              <article key={group.group} className="route-ticket rounded-xl p-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-lakbay-clay">{group.targetCount} targets</p>
+                <h3 className="mt-2 text-base font-black text-lakbay-deep">{group.group}</h3>
+                <p className="mt-2 text-xs font-bold text-lakbay-blue">{group.method}</p>
+                <p className="mt-2 text-xs leading-5 text-lakbay-deep/60">{group.keyQuestion}</p>
+              </article>
+            ))}
           </div>
         </section>
       </section>

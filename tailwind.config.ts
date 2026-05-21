@@ -10,20 +10,21 @@ const config: Config = {
     extend: {
       colors: {
         lakbay: {
-          green: "#0f6f52",
-          leaf: "#2f8f4e",
-          deep: "#173326",
-          gold: "#e9a427",
-          fiesta: "#c34a2c",
-          clay: "#9f4f2f",
-          paper: "#f7efd8",
-          cream: "#fff7ed",
-          river: "#1f7a8c"
+          green: "#2B6D4F",
+          leaf: "#4D8B68",
+          deep: "#123224",
+          blue: "#00477E",
+          gold: "#F4A623",
+          fiesta: "#00477E",
+          clay: "#416B5B",
+          paper: "#F7F1E4",
+          cream: "#FFFAF0",
+          river: "#0B5E8E"
         }
       },
       boxShadow: {
-        soft: "0 18px 60px rgba(67, 43, 25, 0.12)",
-        stamp: "0 14px 0 rgba(159, 79, 47, 0.12)"
+        soft: "0 18px 60px rgba(0, 71, 126, 0.12)",
+        stamp: "0 14px 0 rgba(43, 109, 79, 0.12)"
       }
     }
   },

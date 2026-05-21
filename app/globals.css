@@ -14,9 +14,10 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 8% 8%, rgba(233, 164, 39, 0.16), transparent 28%),
-    linear-gradient(135deg, #fbf5e7 0%, #f7efd8 42%, #eef4dc 100%);
-  color: #173326;
+    radial-gradient(circle at 10% 8%, rgba(244, 166, 35, 0.16), transparent 30%),
+    radial-gradient(circle at 92% 12%, rgba(0, 71, 126, 0.08), transparent 26%),
+    linear-gradient(135deg, #fffbf1 0%, #f7f1e4 48%, #edf5ed 100%);
+  color: #123224;
 }
 
 button,
@@ -28,29 +29,30 @@ input {
 
 .demo-map-grid {
   background-image:
-    linear-gradient(rgba(15, 111, 82, 0.14) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 111, 82, 0.14) 1px, transparent 1px),
-    radial-gradient(circle at 25% 25%, rgba(233, 164, 39, 0.30), transparent 28%),
-    radial-gradient(circle at 70% 55%, rgba(31, 122, 140, 0.18), transparent 35%);
+    linear-gradient(rgba(43, 109, 79, 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43, 109, 79, 0.14) 1px, transparent 1px),
+    radial-gradient(circle at 25% 25%, rgba(244, 166, 35, 0.30), transparent 28%),
+    radial-gradient(circle at 70% 55%, rgba(0, 71, 126, 0.16), transparent 35%);
   background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
 }
 
 .lakbay-page {
   min-height: 100vh;
   background:
-    linear-gradient(90deg, rgba(159, 79, 47, 0.10) 1px, transparent 1px),
-    linear-gradient(rgba(15, 111, 82, 0.08) 1px, transparent 1px),
-    linear-gradient(135deg, #fbf5e7 0%, #f7efd8 48%, #eef4dc 100%);
+    linear-gradient(90deg, rgba(0, 71, 126, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(43, 109, 79, 0.08) 1px, transparent 1px),
+    linear-gradient(135deg, #fffbf1 0%, #f7f1e4 48%, #edf5ed 100%);
   background-size: 72px 72px, 72px 72px, 100% 100%;
 }
 
 .heritage-hero {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(159, 79, 47, 0.24);
+  border: 1px solid rgba(244, 166, 35, 0.28);
   background:
-    linear-gradient(135deg, rgba(23, 51, 38, 0.96), rgba(15, 111, 82, 0.92)),
-    repeating-linear-gradient(45deg, rgba(233, 164, 39, 0.18) 0 8px, transparent 8px 18px);
+    radial-gradient(circle at 82% 16%, rgba(244, 166, 35, 0.16), transparent 28%),
+    linear-gradient(135deg, rgba(18, 50, 36, 0.98), rgba(43, 109, 79, 0.94) 54%, rgba(0, 71, 126, 0.96)),
+    repeating-linear-gradient(45deg, rgba(244, 166, 35, 0.14) 0 8px, transparent 8px 18px);
 }
 
 .heritage-hero::after {
@@ -59,20 +61,20 @@ input {
   inset: auto -10% -45% 18%;
   height: 72%;
   border-radius: 999px;
-  background: rgba(233, 164, 39, 0.14);
+  background: rgba(244, 166, 35, 0.14);
   transform: rotate(-8deg);
 }
 
 .local-card {
-  border: 1px solid rgba(159, 79, 47, 0.22);
+  border: 1px solid rgba(43, 109, 79, 0.20);
   background:
-    linear-gradient(180deg, rgba(255, 252, 244, 0.96), rgba(250, 242, 222, 0.96));
-  box-shadow: 0 18px 50px rgba(67, 43, 25, 0.10);
+    linear-gradient(180deg, rgba(255, 252, 244, 0.96), rgba(247, 241, 228, 0.96));
+  box-shadow: 0 18px 50px rgba(0, 71, 126, 0.10);
 }
 
 .route-ticket {
   position: relative;
-  border: 1px dashed rgba(159, 79, 47, 0.42);
+  border: 1px dashed rgba(43, 109, 79, 0.34);
   background: #fffaf0;
 }
 
@@ -84,7 +86,7 @@ input {
   width: 18px;
   height: 18px;
   border-radius: 999px;
-  background: #f7efd8;
+  background: #f7f1e4;
 }
 
 .route-ticket::before {
@@ -98,16 +100,16 @@ input {
 .stamp-label {
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(195, 74, 44, 0.45);
-  color: #9f4f2f;
-  background: rgba(255, 247, 237, 0.78);
+  border: 1px solid rgba(244, 166, 35, 0.48);
+  color: #00477e;
+  background: rgba(255, 250, 240, 0.84);
   text-transform: uppercase;
 }
 
 .route-line {
   background-image:
-    radial-gradient(circle, rgba(233, 164, 39, 0.95) 0 4px, transparent 5px),
-    linear-gradient(90deg, rgba(15, 111, 82, 0.28), rgba(195, 74, 44, 0.26));
+    radial-gradient(circle, rgba(244, 166, 35, 0.95) 0 4px, transparent 5px),
+    linear-gradient(90deg, rgba(43, 109, 79, 0.30), rgba(0, 71, 126, 0.28));
   background-position: left center, center;
   background-repeat: repeat-x, no-repeat;
   background-size: 46px 12px, 100% 2px;

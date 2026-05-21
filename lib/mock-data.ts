@@ -164,7 +164,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   tourist: {
     role: "tourist",
     label: "Tourist",
-    demoEmail: "tourist@lakbay.test",
+    demoEmail: "tourist@lakbay.local",
     headline: "Plan, scan, earn, and discover more of Tayabas.",
     summary: "The tourist dashboard focuses on routes, QR check ins, points, badges, saved places, and local recommendations.",
     primaryActions: ["Open interactive map", "Scan LocalPass QR", "Build itinerary", "Browse food and pasalubong"],
@@ -181,7 +181,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   merchant: {
     role: "merchant",
     label: "Merchant",
-    demoEmail: "merchant@lakbay.test",
+    demoEmail: "food@lakbay.local",
     headline: "Manage products, promos, and visitor inquiries.",
     summary: "The merchant dashboard helps restaurants, cafes, and pasalubong sellers become discoverable in tourism routes.",
     primaryActions: ["Edit business listing", "Add product or bundle", "Create coupon", "Review inquiries"],
@@ -198,7 +198,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   guide: {
     role: "guide",
     label: "Tour Guide",
-    demoEmail: "guide@lakbay.test",
+    demoEmail: "guide@lakbay.local",
     headline: "Publish tours and respond to booking requests.",
     summary: "The guide dashboard turns local knowledge into structured heritage walks, food tours, and educational packages.",
     primaryActions: ["Update guide profile", "Create tour package", "Review booking request", "View tourist feedback"],
@@ -215,7 +215,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   transport: {
     role: "transport",
     label: "Transport Provider",
-    demoEmail: "transport@lakbay.test",
+    demoEmail: "transport@lakbay.local",
     headline: "Receive local ride, terminal pickup, and route requests.",
     summary: "The transport dashboard connects visitors with local mobility providers without requiring a full ride hailing system for the MVP.",
     primaryActions: ["Set available routes", "Review ride requests", "Update contact number", "Post service notes"],
@@ -232,7 +232,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   accommodation: {
     role: "accommodation",
     label: "Accommodation Owner",
-    demoEmail: "stay@lakbay.test",
+    demoEmail: "stay@lakbay.local",
     headline: "List rooms, farm stays, inns, and retreat packages.",
     summary: "The accommodation dashboard gives smaller stays a simple booking inquiry channel connected to tourist routes.",
     primaryActions: ["Edit stay listing", "Upload room photos", "Review booking inquiries", "Set room availability"],
@@ -249,7 +249,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   event_organizer: {
     role: "event_organizer",
     label: "Event Organizer",
-    demoEmail: "events@lakbay.test",
+    demoEmail: "events@lakbay.local",
     headline: "Publish events and connect them to routes and merchants.",
     summary: "The event dashboard helps promote festivals, guided walks, weekend markets, and special QR challenges.",
     primaryActions: ["Create event", "Add event route", "Invite merchants", "View registrations"],
@@ -266,7 +266,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   tourism_staff: {
     role: "tourism_staff",
     label: "Tourism Staff",
-    demoEmail: "tourism@lakbay.test",
+    demoEmail: "tourism@lakbay.local",
     headline: "Manage destinations, stories, QR codes, and tourism analytics.",
     summary: "The tourism staff dashboard serves as the city operations console for destination content, route curation, events, and insights.",
     primaryActions: ["Approve destination edits", "Generate QR content", "Publish itinerary", "View visitor analytics"],
@@ -283,7 +283,7 @@ export const roleProfiles: Record<UserRole, RoleProfile> = {
   admin: {
     role: "admin",
     label: "System Admin",
-    demoEmail: "admin@lakbay.test",
+    demoEmail: "admin@lakbay.local",
     headline: "Control roles, approvals, audit logs, and platform settings.",
     summary: "The admin dashboard manages account permissions, user roles, listing moderation, data governance, and platform health.",
     primaryActions: ["Manage users", "Assign roles", "Review approvals", "Export reports"],

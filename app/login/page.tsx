@@ -2,12 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { roleOrder, roleProfiles } from "@/lib/mock-data";
+import { demoAccountCredentials } from "@/lib/product-brief";
 import type { UserRole } from "@/lib/types";
 
 const storageKey = "lakbay-localpass-role";
 
 export default function LoginPage() {
   const router = useRouter();
+  const credentialsByEmail = new Map(demoAccountCredentials.map((credential) => [credential.email, credential]));
 
   function loginAs(role: UserRole) {
     window.localStorage.setItem(storageKey, role);
@@ -28,6 +30,7 @@ export default function LoginPage() {
         <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {roleOrder.map((role) => {
             const profile = roleProfiles[role];
+            const credential = credentialsByEmail.get(profile.demoEmail);
             return (
               <button
                 key={role}
@@ -36,6 +39,11 @@ export default function LoginPage() {
               >
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-lakbay-clay">{profile.label}</p>
                 <h2 className="mt-3 text-xl font-black text-lakbay-deep">{profile.demoEmail}</h2>
+                {credential ? (
+                  <p className="mt-2 text-xs font-black uppercase tracking-[0.16em] text-lakbay-blue">
+                    Password: {credential.password}
+                  </p>
+                ) : null}
                 <p className="mt-3 text-sm leading-6 text-lakbay-deep/60">{profile.headline}</p>
               </button>
             );

@@ -7,6 +7,7 @@ const links = [
   { href: "/food", label: "Food" },
   { href: "/stays", label: "Stays" },
   { href: "/transport", label: "Sakay" },
+  { href: "/map", label: "Map" },
   { href: "/tours", label: "Tours" },
   { href: "/events", label: "Events" },
   { href: "/mobile", label: "Mobile" },

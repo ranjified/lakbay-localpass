@@ -56,17 +56,19 @@ export function calculateBadges(
 
   return baseBadges.map((badge) => ({
     ...badge,
-    unlocked: unlocked.has(badge.id),
-    unlockedAt: unlocked.has(badge.id) ? new Date().toISOString() : undefined
+    unlocked: unlocked.has(badge.id)
   }));
 }
 
-export function calculateUnlockedCoupons(points: number, checkInCount: number): Coupon[] {
-  return baseCoupons.map((coupon, index) => ({
+export function calculateUnlockedCoupons(
+  points: number,
+  checkInCount: number,
+  availableCoupons: Coupon[] = baseCoupons
+): Coupon[] {
+  return availableCoupons.map((coupon) => ({
     ...coupon,
     claimed:
-      (index === 0 && points >= 50) ||
-      (index === 1 && points >= 100) ||
+      (coupon.id !== "coupon-route-souvenir" && points >= coupon.pointsRequired) ||
       (coupon.id === "coupon-route-souvenir" && checkInCount >= 3)
   }));
 }

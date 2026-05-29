@@ -103,6 +103,30 @@ describe("LocalPass rules", () => {
     );
   });
 
+  it("does not synthesize time-dependent badge timestamps", () => {
+    const badges = calculateBadges(
+      {
+        savedDestinationIds: [],
+        checkIns: [
+          {
+            id: "c1",
+            destinationId: "basilica",
+            qrCode: "LLP:TAYABAS:BASILICA",
+            pointsAwarded: 25,
+            checkedInAt: "2026-05-29T00:00:00.000Z"
+          }
+        ],
+        requests: []
+      },
+      destinations
+    );
+
+    const firstCheckInBadge = badges.find((badge) => badge.id === "first-check-in");
+
+    expect(firstCheckInBadge).toMatchObject({ unlocked: true });
+    expect(firstCheckInBadge).not.toHaveProperty("unlockedAt");
+  });
+
   it("unlocks coupons at 50 points, 100 points, and 3 check ins", () => {
     const coupons = calculateUnlockedCoupons(100, 3);
 
@@ -113,5 +137,36 @@ describe("LocalPass rules", () => {
         "coupon-route-souvenir"
       ])
     );
+  });
+
+  it("unlocks point coupons independent of coupon array order", () => {
+    const coupons = calculateUnlockedCoupons(100, 0, [
+      {
+        id: "coupon-route-souvenir",
+        title: "Route souvenir stamp",
+        description: "Unlock after three destination check-ins.",
+        pointsRequired: 0,
+        claimed: false
+      },
+      {
+        id: "coupon-guide-tip-sheet",
+        title: "Local guide tip sheet",
+        description: "Unlock a planning perk for your next guided route at 100 points.",
+        pointsRequired: 100,
+        claimed: false
+      },
+      {
+        id: "coupon-pasalubong-5",
+        title: "Pasalubong 5% perk",
+        description: "Unlock a demo 5% pasalubong perk after earning 50 points.",
+        pointsRequired: 50,
+        claimed: false
+      }
+    ]);
+
+    expect(coupons.filter((coupon) => coupon.claimed).map((coupon) => coupon.id)).toEqual([
+      "coupon-guide-tip-sheet",
+      "coupon-pasalubong-5"
+    ]);
   });
 });

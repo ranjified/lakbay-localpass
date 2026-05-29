@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { roleExperiences, roleOrder, serviceModules } from "@/lib/mock-data";
-import { keyMetrics, validationGroups } from "@/lib/product-brief";
+import { keyMetrics, roleExperiences, roleOrder, serviceModules, validationGroups } from "@/features/services/data";
 
 export default function ServicesPage() {
   return (

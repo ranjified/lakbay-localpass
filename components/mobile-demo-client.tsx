@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { mobileRoleScreens, roleExperiences, roleOrder } from "@/lib/mock-data";
+import { mobileRoleScreens, roleExperiences, roleOrder } from "@/features/dashboard/data";
 import type { UserRole } from "@/lib/types";
 
 const navItems = ["Home", "Map", "Scan", "Trips", "Pass"];

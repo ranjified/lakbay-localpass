@@ -1,5 +1,5 @@
 import { FoodOrderClient } from "@/components/flows/food-order-client";
-import { foodOrders, products } from "@/lib/mock-data";
+import { foodOrders, products } from "@/features/marketplace/data";
 
 export default function FoodPage() {
   return (

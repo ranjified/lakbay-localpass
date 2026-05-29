@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { eventTripBuilders } from "@/lib/mock-data";
+import { eventTripBuilders } from "@/features/events/data";
 
 export function EventTripBuilderClient() {
   const [selected, setSelected] = useState(eventTripBuilders[0].id);

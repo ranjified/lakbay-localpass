@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { roleOrder, roleProfiles } from "@/lib/mock-data";
-import { demoAccountCredentials } from "@/lib/product-brief";
+import { roleOrder, roleProfiles } from "@/features/dashboard/data";
+import { demoAccountCredentials } from "@/features/product/data";
 import type { UserRole } from "@/lib/types";
 
 const storageKey = "lakbay-localpass-role";

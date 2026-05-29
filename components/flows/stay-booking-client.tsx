@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { stayOptions, tripStyles } from "@/lib/mock-data";
+import { stayOptions, tripStyles } from "@/features/stays/data";
 
 export function StayBookingClient() {
   const [selected, setSelected] = useState(stayOptions[0].id);

@@ -1,5 +1,5 @@
 import { DashboardClient } from "@/components/dashboard-client";
-import { roleProfiles } from "@/lib/mock-data";
+import { roleProfiles } from "@/features/dashboard/data";
 import type { UserRole } from "@/lib/types";
 
 function isUserRole(value: string | undefined): value is UserRole {

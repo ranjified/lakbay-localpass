@@ -1,7 +1,7 @@
 "use client";
 
 import type { UserRole } from "@/lib/types";
-import { roleOrder, roleProfiles } from "@/lib/mock-data";
+import { roleOrder, roleProfiles } from "@/features/dashboard/data";
 
 export function RoleSwitcher({ value, onChange }: { value: UserRole; onChange: (role: UserRole) => void }) {
   return (

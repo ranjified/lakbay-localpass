@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { destinations } from "@/lib/mock-data";
+import { destinations } from "@/features/destinations/data";
 
 export default function DestinationsPage() {
   return (

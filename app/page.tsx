@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { LakbayLogo } from "@/components/lakbay-logo";
-import { businesses, destinations, events } from "@/lib/mock-data";
-import { demoStoryline, expectedImpact, problemPoints, valuePillars } from "@/lib/product-brief";
+import { businesses } from "@/features/marketplace/data";
+import { destinations } from "@/features/destinations/data";
+import { events } from "@/features/events/data";
+import { demoStoryline, expectedImpact, problemPoints, valuePillars } from "@/features/product/data";
 
 const modules = [
   "Interactive tourism map",

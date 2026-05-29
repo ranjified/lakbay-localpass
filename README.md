@@ -63,6 +63,12 @@ This build includes:
 | Hosting | Vercel |
 | Version control | GitHub |
 
+## Architecture
+
+The project uses a feature-sliced modular monolith. Routes stay in `app/`, domain boundaries live in `features/`, shared infrastructure lives in `lib/`, and database scripts live in `supabase/`.
+
+See `docs/ARCHITECTURE.md` for the code boundaries, permission model, and Supabase migration path.
+
 ## Local setup
 
 ```bash

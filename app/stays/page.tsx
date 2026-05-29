@@ -1,5 +1,5 @@
 import { StayBookingClient } from "@/components/flows/stay-booking-client";
-import { stayBookings, stayRooms } from "@/lib/mock-data";
+import { stayBookings, stayRooms } from "@/features/stays/data";
 
 export default function StaysPage() {
   return (

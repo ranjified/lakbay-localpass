@@ -1,5 +1,5 @@
 import { TourRequestClient } from "@/components/flows/tour-request-client";
-import { tourPackages, tourRequests } from "@/lib/mock-data";
+import { tourPackages, tourRequests } from "@/features/tours/data";
 
 export default function ToursPage() {
   return (

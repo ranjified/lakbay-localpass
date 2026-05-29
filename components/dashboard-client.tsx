@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { adminTrustQueue, businesses, demoRequests, destinations, roleExperiences, roleProfiles, tourismHeatPulse } from "@/lib/mock-data";
+import { adminTrustQueue, businesses, demoRequests, destinations, roleExperiences, roleProfiles, tourismHeatPulse } from "@/features/dashboard/data";
 import type { UserRole } from "@/lib/types";
 import { RoleSwitcher } from "./role-switcher";
 import { StatCard } from "./stat-card";

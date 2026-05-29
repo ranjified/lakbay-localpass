@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { LiveRouteTracker } from "@/components/live-route-tracker";
-import { destinations, tripStyles, vehiclePackages } from "@/lib/mock-data";
+import { destinations, tripStyles, vehiclePackages } from "@/features/transport/data";
 
 const casaComunidad = destinations.find((destination) => destination.id === "casa-comunidad") ?? destinations[1];
 const budinTrail = destinations.find((destination) => destination.id === "budin-trail") ?? destinations[2];

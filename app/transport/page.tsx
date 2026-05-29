@@ -1,5 +1,5 @@
 import { TransportRequestClient } from "@/components/flows/transport-request-client";
-import { rideRequests, vehiclePackages } from "@/lib/mock-data";
+import { rideRequests, vehiclePackages } from "@/features/transport/data";
 
 export default function TransportPage() {
   return (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { destinations } from "@/lib/mock-data";
+import { destinations } from "@/features/localpass/data";
 
 const checkinKey = "lakbay-localpass-checkins";
 

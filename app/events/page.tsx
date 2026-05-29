@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { EventTripBuilderClient } from "@/components/flows/event-trip-builder-client";
-import { events } from "@/lib/mock-data";
+import { events } from "@/features/events/data";
 
 const eventAddOns = [
   "Recommended food and pasalubong bundles",

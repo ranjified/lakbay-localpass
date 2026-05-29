@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { LiveRouteTracker } from "@/components/live-route-tracker";
-import { destinations, tourPackages } from "@/lib/mock-data";
+import { destinations, tourPackages } from "@/features/tours/data";
 
 const basilica = destinations.find((destination) => destination.id === "basilica-st-michael") ?? destinations[0];
 const casaComunidad = destinations.find((destination) => destination.id === "casa-comunidad") ?? destinations[1];

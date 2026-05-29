@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { products, tripStyles } from "@/lib/mock-data";
+import { products, tripStyles } from "@/features/marketplace/data";
 
 const orderModes = ["Pickup", "Pre-order", "Delivery request", "Dine-in reservation", "Pasalubong bundle reservation"];
 

@@ -72,12 +72,25 @@ See `docs/ARCHITECTURE.md` for the code boundaries, permission model, and Supaba
 ## Local setup
 
 ```bash
-npm install
+pnpm install
 cp .env.example .env.local
-npm run dev
+pnpm dev:web
 ```
 
 Open `http://localhost:3000`.
+
+Run the Expo mobile app:
+
+```bash
+pnpm dev:mobile
+```
+
+Workspace checks:
+
+```bash
+pnpm typecheck
+pnpm build:web
+```
 
 ## Supabase setup
 
